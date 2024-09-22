@@ -27,7 +27,7 @@ public class MovieService {
         return instance;
     }
 
-    public static List<MovieOutDTO> findAll() {
+    public List<MovieOutDTO> findAll() {
         List<Movie> movies = MovieRepository.getAllMovies();
         return movies.stream()
                 .map(MovieService::findSelections)
@@ -35,7 +35,7 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
-    public static MovieOutDTO findById(int id) {
+    public MovieOutDTO findById(int id) {
         Movie movie = MovieRepository.getMovieById(id);
         movie = findSelections(movie);
         if(movie != null) {
@@ -43,26 +43,26 @@ public class MovieService {
         } else return null;
     }
 
-    public static List<MovieOutDTO> findAllSerials() {
+    public List<MovieOutDTO> findAllSerials() {
         List<Movie> serials = MovieRepository.getAllSerials();
         if(serials != null) {
             return MovieOutDTOMapper.map(serials);
         } else return null;
     }
 
-    public static MovieInDTO add(MovieInDTO movieInDTO) {
+    public MovieInDTO add(MovieInDTO movieInDTO) {
         Movie movie = MovieInDTOMapper.map(movieInDTO);
         MovieRepository.addMovie(movie);
         return MovieInDTOMapper.map(movie);
     }
 
-    public static MovieUpdateDTO update(MovieUpdateDTO movieUpdateDTO) {
+    public MovieUpdateDTO update(MovieUpdateDTO movieUpdateDTO) {
         Movie movie = MovieUpdateDTOMapper.map(movieUpdateDTO);
         MovieRepository.updateMovie(movie);
         return movieUpdateDTO;
     }
 
-    public static MovieUpdateDTO delete(MovieUpdateDTO movieUpdateDTO) {
+    public MovieUpdateDTO delete(MovieUpdateDTO movieUpdateDTO) {
         Movie movie = MovieUpdateDTOMapper.map(movieUpdateDTO);
         MovieRepository.deleteMovie(movie);
         return movieUpdateDTO;

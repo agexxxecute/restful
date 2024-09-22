@@ -12,6 +12,7 @@ public class MovieUpdateDTOMapper {
         movie.setId(movieUpdateDTO.getId());
         movie.setTitle(movieUpdateDTO.getTitle());
         movie.setYear(movieUpdateDTO.getYear());
+        movie.setSerial(movieUpdateDTO.isSerial());
         Integer director_id = movieUpdateDTO.getDirector_id();
         if(director_id != null && director_id > 0) {
             DirectorOutDTO directorOutDTO = DirectorService.findById(director_id);
