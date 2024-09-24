@@ -1,4 +1,4 @@
-package org.example;
+package org.example.ServletTest;
 
 import DTO.MovieInDTO;
 import DTO.MovieUpdateDTO;

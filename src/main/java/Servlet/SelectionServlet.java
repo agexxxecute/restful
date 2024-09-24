@@ -1,9 +1,9 @@
 package Servlet;
 
 import DTO.SelectionInDTO;
-import DTO.SelectionNoIdDTO;
 import DTO.SelectionOutDTO;
 import DTO.SelectionUpdateDTO;
+import Service.Impl.SelectionServiceImpl;
 import Service.SelectionService;
 import com.google.gson.Gson;
 
@@ -20,6 +20,7 @@ import java.util.List;
 public class SelectionServlet extends HttpServlet {
 
     private Gson gson = new Gson();
+    private SelectionService selectionService = new SelectionServiceImpl();
 
     private static String getJson(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -32,43 +33,46 @@ public class SelectionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String[] pathPart = req.getPathInfo().split("/");
         if ("all".equals(pathPart[1])) {
-            List<SelectionOutDTO> selectionOutDTOS = SelectionService.findAll();
+            List<SelectionOutDTO> selectionOutDTOS = selectionService.findAll();
             resp.getWriter().println(gson.toJson(selectionOutDTOS));
         } else{
             int id = Integer.parseInt(pathPart[1]);
-            SelectionOutDTO selectionOutDTO = SelectionService.findById(id);
+            SelectionOutDTO selectionOutDTO = selectionService.findById(id);
             resp.getWriter().println(gson.toJson(selectionOutDTO));
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         SelectionInDTO selectionInDTO = gson.fromJson(json, SelectionInDTO.class);
-        SelectionService.add(selectionInDTO);
-        List<SelectionOutDTO> selectionOutDTOS = SelectionService.findAll();
+        selectionService.add(selectionInDTO);
+        List<SelectionOutDTO> selectionOutDTOS = selectionService.findAll();
         resp.getWriter().println(gson.toJson(selectionOutDTOS));
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         SelectionUpdateDTO selectionUpdateDTO = gson.fromJson(json, SelectionUpdateDTO.class);
-        SelectionService.update(selectionUpdateDTO);
-        List<SelectionOutDTO> selectionOutDTOS = SelectionService.findAll();
+        selectionService.update(selectionUpdateDTO);
+        List<SelectionOutDTO> selectionOutDTOS = selectionService.findAll();
         resp.getWriter().println(gson.toJson(selectionOutDTOS));
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        String json = getJson(req);
-        SelectionUpdateDTO selectionUpdateDTO = gson.fromJson(json, SelectionUpdateDTO.class);
+        String[] pathPart = req.getPathInfo().split("/");
+        int selectionId = Integer.parseInt(pathPart[1]);
+        selectionService.delete(selectionId);
+        List<SelectionOutDTO> selectionOutDTOS = selectionService.findAll();
+        resp.getWriter().println(gson.toJson(selectionOutDTOS));
     }
 }

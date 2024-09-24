@@ -1,12 +1,9 @@
-package org.example;
+package org.example.ServletTest;
 
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
-import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
-import Service.Impl.MovieServiceImpl;
 import Servlet.DirectorServlet;
-import Servlet.MovieServlet;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

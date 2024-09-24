@@ -11,6 +11,7 @@ import Mapper.MovieInDTOMapper;
 import Mapper.MovieUpdateDTOMapper;
 import Repository.Impl.MovieRepositoryImpl;
 import Repository.MovieToSelectionRepository;
+import Repository.Impl.SelectionRepositoryImpl;
 import Repository.SelectionRepository;
 import Service.MovieService;
 
@@ -20,9 +21,10 @@ import java.util.stream.Collectors;
 public class MovieServiceImpl implements MovieService {
 
     private static MovieServiceImpl instance;
-    private MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
+    private static MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
     private static MovieInDTOMapper movieInDTOMapper = new MovieInDTOMapper();
     private static MovieUpdateDTOMapper movieUpdateDTOMapper = new MovieUpdateDTOMapper();
+    private static SelectionRepository selectionRepository = new SelectionRepositoryImpl();
 
     public static MovieServiceImpl getInstance() {
         if (instance == null) {
@@ -74,7 +76,7 @@ public class MovieServiceImpl implements MovieService {
         List<MovieToSelection> selectionsIds = MovieToSelectionRepository.findByMovieId(movie.getId());
         List<Selection> selections = selectionsIds.stream()
                 .map(MovieToSelection::getSelectionId)
-                .map(SelectionRepository::findSelectionById)
+                .map(selectionRepository::findSelectionById)
                 .collect(Collectors.toList());
         movie.setSelections(selections);
         return movie;
