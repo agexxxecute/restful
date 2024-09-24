@@ -1,21 +1,15 @@
 package org.example;
 
 import DTO.MovieInDTO;
-import DTO.MovieOutDTO;
 import DTO.MovieUpdateDTO;
-import Entity.Movie;
-import Entity.User;
-import Service.MovieService;
+import Service.Impl.MovieServiceImpl;
 import Servlet.MovieServlet;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -24,20 +18,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.sql.*;
-import java.util.List;
 
 
 @ExtendWith(
         MockitoExtension.class
 )
 
-public class UnitTest {
+public class MovieServletTest {
 
-    private static MovieService mockMovieService;
+    private static MovieServiceImpl mockMovieService;
     @InjectMocks
     private static MovieServlet movieServlet;
-    private static MovieService oldInstance;
+    private static MovieServiceImpl oldInstance;
     @Mock
     private HttpServletRequest mockRequest;
     @Mock
@@ -47,11 +39,11 @@ public class UnitTest {
 
     //private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.4");
 
-    private static void setMock(MovieService mock){
+    private static void setMock(MovieServiceImpl mock){
         try {
-            Field instance = MovieService.class.getDeclaredField("instance");
+            Field instance = MovieServiceImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
-            oldInstance = (MovieService) instance.get(instance);
+            oldInstance = (MovieServiceImpl) instance.get(instance);
             instance.set(instance,mock);
         } catch (Exception e){
             e.printStackTrace();
@@ -71,7 +63,7 @@ public class UnitTest {
 
     @BeforeAll
     static void beforeMock(){
-        mockMovieService = Mockito.mock(MovieService.class);
+        mockMovieService = Mockito.mock(MovieServiceImpl.class);
         setMock(mockMovieService);
         movieServlet = new MovieServlet();
     }
@@ -88,7 +80,7 @@ public class UnitTest {
 
     @AfterAll
     static void afterAll() throws Exception {
-        Field instance = MovieService.class.getDeclaredField("instance");
+        Field instance = MovieServiceImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
         instance.set(instance, oldInstance);
     }
@@ -150,6 +142,44 @@ public class UnitTest {
         Assertions.assertEquals(expectedDirectiorId, result.getDirector_id());
 
     }
+
+    @Test
+    void doPut() throws IOException, ServletException {
+        String expectedTitle = "New Movie";
+        int expectedYear = 0;
+        boolean expectedIsSerial = false;
+        int expectedDirectiorId = 5;
+
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn("{\"id\": 15" +
+                ",\"title\":\"" + expectedTitle + "\"" +
+                ",\"year\":\"" + expectedYear + "\"" +
+                ",\"isSerial\":\"" + expectedIsSerial + "\"" +
+                ",\"director_id\":\"" + expectedDirectiorId + "\"" +
+                ",\"selections\": [{\"id\" : 2,\"name\": \"Anime\"}]" +
+                "}", null).when(mockReader).readLine();
+
+        movieServlet.doPut(mockRequest, mockResponse);
+
+        ArgumentCaptor<MovieUpdateDTO> argumentCaptor = ArgumentCaptor.forClass(MovieUpdateDTO.class);
+        Mockito.verify(mockMovieService).update(argumentCaptor.capture());
+
+        MovieUpdateDTO result = argumentCaptor.getValue();
+        Assertions.assertEquals(expectedTitle, result.getTitle());
+        Assertions.assertEquals(expectedYear, result.getYear());
+        Assertions.assertEquals(expectedIsSerial, result.isSerial());
+        Assertions.assertEquals(expectedDirectiorId, result.getDirector_id());
+
+    }
+
+    @Test
+    void doDelete() throws IOException, ServletException {
+        Mockito.doReturn("movie/15").when(mockRequest).getPathInfo();
+        movieServlet.doDelete(mockRequest, mockResponse);
+        Mockito.verify(mockMovieService).delete(Mockito.anyInt());
+    }
+
+
 
 
 }

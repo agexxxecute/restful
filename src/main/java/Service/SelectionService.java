@@ -1,17 +1,16 @@
 package Service;
 
 import DTO.SelectionInDTO;
-import DTO.SelectionNoIdDTO;
 import DTO.SelectionOutDTO;
 import DTO.SelectionUpdateDTO;
 import Entity.Movie;
 import Entity.MovieToSelection;
 import Entity.Selection;
 import Mapper.SelectionInDTOMapper;
-import Mapper.SelectionNoIdDTOMapper;
 import Mapper.SelectionOutDTOMapper;
 import Mapper.SelectionUpdateDTOMapper;
 import Repository.MovieRepository;
+import Repository.Impl.MovieRepositoryImpl;
 import Repository.MovieToSelectionRepository;
 import Repository.SelectionRepository;
 
@@ -19,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SelectionService {
+
+    private static MovieRepository movieRepository = new MovieRepositoryImpl();
 
     public static List<SelectionOutDTO> findAll (){
         List<Selection> selections = SelectionRepository.findAll();
@@ -56,7 +57,7 @@ public class SelectionService {
         List<MovieToSelection> movieIds = MovieToSelectionRepository.findBySelectionId(selection.getId());
         List<Movie> movies = movieIds.stream()
                 .map(MovieToSelection::getMovieId)
-                .map(MovieRepository::getMovieById)
+                .map(movieRepository::getMovieById)
                 .collect(Collectors.toList());
         selection.setMovies(movies);
         return selection;

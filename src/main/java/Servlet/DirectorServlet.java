@@ -3,6 +3,7 @@ package Servlet;
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
 import Service.DirectorService;
+import Service.Impl.DirectorServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -17,6 +18,7 @@ import java.util.List;
 
 @WebServlet (urlPatterns = {"/director/*"})
 public class DirectorServlet extends HttpServlet {
+    private DirectorService directorService = new DirectorServiceImpl();
     private Gson gson = new Gson();
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -31,15 +33,15 @@ public class DirectorServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String[] pathPart = req.getPathInfo().split("/");
         if("all".equals(pathPart[1])) {
-            List<DirectorOutDTO> directors = DirectorService.findAll();
+            List<DirectorOutDTO> directors = directorService.findAll();
             resp.setContentType("application/json");
             resp.getWriter().println(gson.toJson(directors));
         } else {
             int directorId = Integer.parseInt(pathPart[1]);
-            DirectorOutDTO directorOutDTO = DirectorService.findById(directorId);
+            DirectorOutDTO directorOutDTO = directorService.findById(directorId);
             resp.setContentType("application/json");
             if (directorOutDTO != null) {
                 resp.getWriter().write(gson.toJson(directorOutDTO));
@@ -47,33 +49,40 @@ public class DirectorServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         DirectorInDTO directorInDTO = gson.fromJson(json, DirectorInDTO.class);
-        DirectorService.add(directorInDTO);
-        List<DirectorOutDTO> directors = DirectorService.findAll();
+        directorService.add(directorInDTO);
+        List<DirectorOutDTO> directors = directorService.findAll();
         //resp.setContentType("application/json");
         resp.getWriter().println(gson.toJson(directors));
 
     }
 
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         DirectorOutDTO directorOutDTO = gson.fromJson(json, DirectorOutDTO.class);
-        DirectorService.update(directorOutDTO);
-        List<DirectorOutDTO> directors = DirectorService.findAll();
+        directorService.update(directorOutDTO);
+        List<DirectorOutDTO> directors = directorService.findAll();
         //resp.setContentType("application/json");
         resp.getWriter().println(gson.toJson(directors));
     }
 
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String[] pathPart = req.getPathInfo().split("/");
+        int directorId = Integer.parseInt(pathPart[1]);
+        directorService.delete(directorId);
+        List<DirectorOutDTO> directors = directorService.findAll();
         resp.setContentType("application/json");
+        resp.getWriter().println(gson.toJson(directors));
+
+        /*resp.setContentType("application/json");
         String json = getJson(req);
         DirectorOutDTO directorOutDTO = gson.fromJson(json, DirectorOutDTO.class);
-        DirectorService.delete(directorOutDTO);
-        List<DirectorOutDTO> directors = DirectorService.findAll();
-        resp.getWriter().println(gson.toJson(directors));
+        directorService.delete(directorOutDTO);
+        List<DirectorOutDTO> directors = directorService.findAll();
+        resp.getWriter().println(gson.toJson(directors));*/
     }
 }

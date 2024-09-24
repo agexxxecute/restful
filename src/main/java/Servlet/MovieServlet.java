@@ -3,7 +3,7 @@ package Servlet;
 import DTO.MovieInDTO;
 import DTO.MovieOutDTO;
 import DTO.MovieUpdateDTO;
-import Service.MovieService;
+import Service.Impl.MovieServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -14,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet (urlPatterns = {"/movie/*"})
 public class MovieServlet extends HttpServlet {
     private Gson gson = new Gson();
     private ObjectMapper objectMapper;
-    private MovieService movieService;
+    private MovieServiceImpl movieService;
 
     public MovieServlet() {
         this.objectMapper = new ObjectMapper();
@@ -73,7 +72,7 @@ public class MovieServlet extends HttpServlet {
         resp.getWriter().write(gson.toJson(movies));
     }
 
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         MovieUpdateDTO movie = gson.fromJson(json, MovieUpdateDTO.class);
@@ -82,12 +81,17 @@ public class MovieServlet extends HttpServlet {
         resp.getWriter().write(gson.toJson(movies));
     }
 
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String[] pathPart =req.getPathInfo().split("/");
+        int movieId = Integer.parseInt(pathPart[1]);
+        movieService.delete(movieId);
+        List<MovieOutDTO> movies = movieService.findAll();
+        resp.getWriter().write(gson.toJson(movies));
+        /*resp.setContentType("application/json");
         String json = getJson(req);
         MovieUpdateDTO movie = gson.fromJson(json, MovieUpdateDTO.class);
         movieService.delete(movie);
         List<MovieOutDTO> movies = movieService.findAll();
-        resp.getWriter().write(gson.toJson(movies));
+        resp.getWriter().write(gson.toJson(movies));*/
     }
 }

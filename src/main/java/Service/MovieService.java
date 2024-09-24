@@ -2,79 +2,17 @@ package Service;
 
 import DTO.MovieInDTO;
 import DTO.MovieOutDTO;
-import DTO.MovieUpdateDTO;
-import Entity.Movie;
-import Entity.MovieToSelection;
-import Entity.Selection;
-import Mapper.MovieOutDTOMapper;
-import Mapper.MovieInDTOMapper;
-import Mapper.MovieUpdateDTOMapper;
-import Repository.MovieRepository;
-import Repository.MovieToSelectionRepository;
-import Repository.SelectionRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class MovieService {
+public interface MovieService{
+    List<MovieOutDTO> findAll();
 
-    private static MovieService instance;
+    MovieOutDTO findById(int id);
 
-    public static MovieService getInstance() {
-        if (instance == null) {
-            instance = new MovieService();
-        }
-        return instance;
-    }
+    List<MovieOutDTO> findAllSerials();
 
-    public List<MovieOutDTO> findAll() {
-        List<Movie> movies = MovieRepository.getAllMovies();
-        return movies.stream()
-                .map(MovieService::findSelections)
-                .map(MovieOutDTOMapper::map)
-                .collect(Collectors.toList());
-    }
+    MovieInDTO add(MovieInDTO movieInDTO);
 
-    public MovieOutDTO findById(int id) {
-        Movie movie = MovieRepository.getMovieById(id);
-        movie = findSelections(movie);
-        if(movie != null) {
-            return MovieOutDTOMapper.map(movie);
-        } else return null;
-    }
-
-    public List<MovieOutDTO> findAllSerials() {
-        List<Movie> serials = MovieRepository.getAllSerials();
-        if(serials != null) {
-            return MovieOutDTOMapper.map(serials);
-        } else return null;
-    }
-
-    public MovieInDTO add(MovieInDTO movieInDTO) {
-        Movie movie = MovieInDTOMapper.map(movieInDTO);
-        MovieRepository.addMovie(movie);
-        return MovieInDTOMapper.map(movie);
-    }
-
-    public MovieUpdateDTO update(MovieUpdateDTO movieUpdateDTO) {
-        Movie movie = MovieUpdateDTOMapper.map(movieUpdateDTO);
-        MovieRepository.updateMovie(movie);
-        return movieUpdateDTO;
-    }
-
-    public MovieUpdateDTO delete(MovieUpdateDTO movieUpdateDTO) {
-        Movie movie = MovieUpdateDTOMapper.map(movieUpdateDTO);
-        MovieRepository.deleteMovie(movie);
-        return movieUpdateDTO;
-    }
-
-    private static Movie findSelections(Movie movie) {
-        List<MovieToSelection> selectionsIds = MovieToSelectionRepository.findByMovieId(movie.getId());
-        List<Selection> selections = selectionsIds.stream()
-                .map(MovieToSelection::getSelectionId)
-                .map(SelectionRepository::findSelectionById)
-                .collect(Collectors.toList());
-        movie.setSelections(selections);
-        return movie;
-    }
+    void delete(int movieId);
 }

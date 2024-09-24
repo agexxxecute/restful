@@ -6,18 +6,20 @@ import Entity.Director;
 import Entity.Movie;
 import Entity.Selection;
 import Service.DirectorService;
+import Service.Impl.DirectorServiceImpl;
 
 import java.util.List;
 
 public class MovieInDTOMapper {
-    public static Movie map (MovieInDTO movieInDTO) {
+    private DirectorService directorService = new DirectorServiceImpl();
+    public Movie map (MovieInDTO movieInDTO) {
         Movie movie = new Movie();
         movie.setTitle(movieInDTO.getTitle());
         movie.setYear(movieInDTO.getYear());
         movie.setSerial(movieInDTO.isSerial());
         Integer director_id = movieInDTO.getDirector_id();
         if(director_id != null && director_id > 0) {
-            DirectorOutDTO directorOutDTO = DirectorService.findById(director_id);
+            DirectorOutDTO directorOutDTO = directorService.findById(director_id);
             Director director = DirectorOutDTOMapper.map(directorOutDTO);
             movie.setDirector(director);
         }
