@@ -15,7 +15,7 @@ public class DirectorOutDTOMapper {
         return new Director(directorOutDTO.getId(), directorOutDTO.getFirstName(), directorOutDTO.getLastName());
     }
 
-    public static List<DirectorOutDTO> map(List<Director> directors) {
+    public List<DirectorOutDTO> map(List<Director> directors) {
         return directors.stream()
                 .map(DirectorOutDTOMapper::map)
                 .collect(Collectors.toList());

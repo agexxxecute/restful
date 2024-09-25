@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MovieRepositoryImpl implements MovieRepository {
+
+    private static MovieRepositoryImpl instance;
+
     //SELECT movie.title, movie.year FROM movie INNER JOIN movie_selection ON movie.id = movie_selection.movie_id INNER JOIN selection ON movie_selection.selection_id = selection.id
     private static String FIND_MOVIE_BY_ID = "SELECT * FROM movie WHERE id = ?";
     private static String FIND_ALL_SERIALS = "SELECT * FROM movie WHERE isserial = true";
@@ -23,8 +26,15 @@ public class MovieRepositoryImpl implements MovieRepository {
     private static String DELETE_MOVIE = "DELETE FROM movie WHERE id = ?";
     private DirectorRepository directorRepository = new DirectorRepositoryImpl();
 
-    public List<Movie> getAllMovies() {
-        List<Movie> movies = new ArrayList<Movie>();
+    public static MovieRepositoryImpl getInstance() {
+        if (instance == null) {
+            instance = new MovieRepositoryImpl();
+        }
+        return instance;
+    }
+
+    public List<Movie> findAll() {
+        List<Movie> movies = new ArrayList<>();
         try(Connection connection = DBUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM movie")){
             ResultSet resultSet = statement.executeQuery();
@@ -52,9 +62,9 @@ public class MovieRepositoryImpl implements MovieRepository {
         return movie;
     }
 
-    public void addMovie(Movie movie) {
+    public Movie addMovie(Movie movie) {
         try(Connection connection = DBUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(CREATE_MOVIE)){
+        PreparedStatement preparedStatement = connection.prepareStatement(CREATE_MOVIE, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, movie.getTitle());
             preparedStatement.setInt(2, movie.getYear());
             preparedStatement.setBoolean(3, movie.isSerial());
@@ -64,14 +74,19 @@ public class MovieRepositoryImpl implements MovieRepository {
                 preparedStatement.setInt(4, movie.getDirector().getId());
             }
             preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if(rs.next()) {
+                movie = createMovie(rs);
+            }
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return movie;
     }
 
-    public void updateMovie(Movie movie) {
+    public Movie updateMovie(Movie movie) {
         try (Connection connection = DBUtil.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_MOVIE)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_MOVIE, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, movie.getTitle());
             preparedStatement.setInt(2, movie.getYear());
             preparedStatement.setBoolean(3, movie.isSerial());
@@ -92,9 +107,16 @@ public class MovieRepositoryImpl implements MovieRepository {
                 }
             }
 
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if(rs.next()) {
+                movie = createMovie(rs);
+            }
+
         } catch (SQLException e){
             e.printStackTrace();
         }
+
+        return movie;
     }
 
     public void deleteMovie(int movieId) {

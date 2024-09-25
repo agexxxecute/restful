@@ -8,20 +8,28 @@ import Mapper.MovieToSelectionNoIDDTOMapper;
 import Repository.MovieToSelectionRepository;
 import Repository.SelectionRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionRepositoryImpl implements SelectionRepository {
+
+    private static SelectionRepository instance;
 
     private static String FIND_BY_ID = "SELECT * FROM selection WHERE id = ?";
     private static String ADD_SELECTION = "INSERT INTO selection (name) VALUES (?)";
     private static String FIND_ALL = "SELECT * FROM selection";
     private static String UPDATE_SELECTION = "UPDATE selection SET name = ? WHERE id = ?";
     private static String DELETE_SELECTION = "DELETE FROM selection WHERE id = ?";
+
+
+
+    public static SelectionRepository getInstance() {
+        if (instance == null) {
+            instance = new SelectionRepositoryImpl();
+        }
+        return instance;
+    }
 
     public Selection findSelectionById(int id) {
         Selection selection = null;
@@ -38,19 +46,24 @@ public class SelectionRepositoryImpl implements SelectionRepository {
         return selection;
     }
 
-    public void addSelection(Selection selection) {
+    public Selection addSelection(Selection selection) {
         try(Connection connection = DBUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(ADD_SELECTION)){
+        PreparedStatement preparedStatement = connection.prepareStatement(ADD_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, selection.getName());
             preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if(resultSet.next()){
+                selection = createSelection(resultSet);
+            }
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return selection;
     }
 
-    public void updateSelection(Selection selection) {
+    public Selection updateSelection(Selection selection) {
         try(Connection connection = DBUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SELECTION)){
+        PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, selection.getName());
             preparedStatement.setInt(2, selection.getId());
             preparedStatement.executeUpdate();
@@ -63,10 +76,15 @@ public class SelectionRepositoryImpl implements SelectionRepository {
                     MovieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }
             }
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if(resultSet.next()){
+                selection = createSelection(resultSet);
+            }
 
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return selection;
     }
 
     public boolean deleteSelection(int selectionId) {
@@ -96,7 +114,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
         return selections;
     }
 
-    private static Selection createSelection(ResultSet resultSet) throws SQLException {
+    private Selection createSelection(ResultSet resultSet) throws SQLException {
 
         Selection selection = new Selection(resultSet.getInt("id"), resultSet.getString("name"), null);
         return selection;

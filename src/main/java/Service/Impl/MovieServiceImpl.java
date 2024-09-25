@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class MovieServiceImpl implements MovieService {
 
     private static MovieServiceImpl instance;
-    private static MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
+    private MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
     private static MovieInDTOMapper movieInDTOMapper = new MovieInDTOMapper();
     private static MovieUpdateDTOMapper movieUpdateDTOMapper = new MovieUpdateDTOMapper();
     private static SelectionRepository selectionRepository = new SelectionRepositoryImpl();
@@ -34,7 +34,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     public List<MovieOutDTO> findAll() {
-        List<Movie> movies = movieRepository.getAllMovies();
+        List<Movie> movies = movieRepository.findAll();
         return movies.stream()
                 .map(MovieServiceImpl::findSelections)
                 .map(MovieOutDTOMapper::map)
@@ -56,10 +56,9 @@ public class MovieServiceImpl implements MovieService {
         } else return null;
     }
 
-    public MovieInDTO add(MovieInDTO movieInDTO) {
+    public Movie add(MovieInDTO movieInDTO) {
         Movie movie = movieInDTOMapper.map(movieInDTO);
-        movieRepository.addMovie(movie);
-        return MovieInDTOMapper.map(movie);
+        return movieRepository.addMovie(movie);
     }
 
     public MovieUpdateDTO update(MovieUpdateDTO movieUpdateDTO) {

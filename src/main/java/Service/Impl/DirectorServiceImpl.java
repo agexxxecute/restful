@@ -13,7 +13,9 @@ import java.util.List;
 public class DirectorServiceImpl implements DirectorService {
 
     private DirectorRepositoryImpl directorRepository = new DirectorRepositoryImpl();
+    private DirectorOutDTOMapper directorOutDTOMapper = new DirectorOutDTOMapper();
     private static DirectorServiceImpl instance;
+
 
     public static DirectorServiceImpl getInstance() {
         if (instance == null) {
@@ -23,14 +25,16 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     public List<DirectorOutDTO> findAll(){
-        List<Director> directors = directorRepository.findAllDirectors();
-        return DirectorOutDTOMapper.map(directors);
+        List<Director> directors = directorRepository.findAll();
+        return directorOutDTOMapper.map(directors);
     }
 
-    public DirectorInDTO add(DirectorInDTO directorInDTO){
+    public DirectorOutDTO add(DirectorInDTO directorInDTO){
         Director director = DirectorInDTOMapper.map(directorInDTO);
-        directorRepository.addDirector(director);
-        return DirectorInDTOMapper.map(director);
+        director = directorRepository.addDirector(director);
+        DirectorOutDTO directorOutDTO = DirectorOutDTOMapper.map(director);
+        return directorOutDTO;
+
     }
 
     public DirectorOutDTO update(DirectorOutDTO directorOutDTO){
@@ -39,8 +43,9 @@ public class DirectorServiceImpl implements DirectorService {
         return DirectorOutDTOMapper.map(director);
     }
 
-    public boolean delete(int directorId){
-        return directorRepository.deleteDirectorById(directorId);
+    public Integer delete(int directorId){
+        directorRepository.deleteDirectorById(directorId);
+        return directorId;
     }
 
     public DirectorOutDTO findById(int id){

@@ -4,14 +4,13 @@ import DB.DBUtil;
 import Entity.Director;
 import Repository.DirectorRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DirectorRepositoryImpl implements DirectorRepository {
+
+    private static DirectorRepository instance;
 
     private static String FIND_ALL_DIRECTORS = "SELECT * FROM director";
     private static String FIND_DIRECTOR_BY_ID = "SELECT * FROM director WHERE id = ?";
@@ -19,8 +18,15 @@ public class DirectorRepositoryImpl implements DirectorRepository {
     private static String UPDATE_DIRECTOR = "UPDATE director SET firstname = ?, lastname = ? WHERE id = ?";
     private static String DELETE_DIRECTOR_BY_ID = "DELETE FROM director WHERE id = ?";
 
-    public List<Director> findAllDirectors() {
-        List<Director> directors = new ArrayList<Director>();
+    public static DirectorRepository getInstance() {
+        if (instance == null) {
+            instance = new DirectorRepositoryImpl();
+        }
+        return instance;
+    }
+
+    public List<Director> findAll() {
+        List<Director> directors = new ArrayList<>();
         try(Connection connection = DBUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_DIRECTORS)){
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -35,7 +41,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
 
     public Director addDirector(Director director) {
         try(Connection connection = DBUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(ADD_DIRECTOR)){
+        PreparedStatement preparedStatement = connection.prepareStatement(ADD_DIRECTOR, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, director.getFirstName());
             preparedStatement.setString(2, director.getLastName());
             preparedStatement.executeUpdate();

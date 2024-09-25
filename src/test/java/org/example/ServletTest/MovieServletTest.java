@@ -117,6 +117,13 @@ public class MovieServletTest {
     }
 
     @Test
+    void doGetSerials() throws IOException, ServletException {
+        Mockito.doReturn("movie/serials").when(mockRequest).getPathInfo();
+        movieServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockMovieService).findAllSerials();
+    }
+
+    @Test
     void doPost() throws IOException, ServletException {
         String expectedTitle = "New Movie";
         int expectedYear = 0;

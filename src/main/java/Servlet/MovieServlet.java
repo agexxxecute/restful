@@ -20,7 +20,7 @@ import java.util.List;
 public class MovieServlet extends HttpServlet {
     private Gson gson = new Gson();
     private ObjectMapper objectMapper;
-    private MovieServiceImpl movieService;
+    private MovieServiceImpl movieService = MovieServiceImpl.getInstance();
 
     public MovieServlet() {
         this.objectMapper = new ObjectMapper();

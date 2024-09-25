@@ -7,9 +7,9 @@ import java.util.List;
 public interface SelectionRepository {
     Selection findSelectionById(int id);
 
-    void addSelection(Selection selection);
+    Selection addSelection(Selection selection);
 
-    void updateSelection(Selection selection);
+    Selection updateSelection(Selection selection);
 
     boolean deleteSelection(int selectionId);
 

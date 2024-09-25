@@ -13,4 +13,9 @@ public class SelectionUpdateDTOMapper {
         }
         return selection;
     }
+
+    public static SelectionUpdateDTO map (Selection selection) {
+        SelectionUpdateDTO selectionUpdateDTO = new SelectionUpdateDTO(selection.getId(),selection.getName(),selection.getMovies());
+        return selectionUpdateDTO;
+    }
 }

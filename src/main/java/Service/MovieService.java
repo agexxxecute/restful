@@ -2,6 +2,8 @@ package Service;
 
 import DTO.MovieInDTO;
 import DTO.MovieOutDTO;
+import DTO.MovieUpdateDTO;
+import Entity.Movie;
 
 import java.util.List;
 
@@ -12,7 +14,9 @@ public interface MovieService{
 
     List<MovieOutDTO> findAllSerials();
 
-    MovieInDTO add(MovieInDTO movieInDTO);
+    Movie add(MovieInDTO movieInDTO);
+
+    MovieUpdateDTO update(MovieUpdateDTO movieUpdateDTO);
 
     void delete(int movieId);
 }

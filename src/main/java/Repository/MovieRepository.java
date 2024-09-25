@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface MovieRepository {
 
-    List<Movie> getAllMovies();
+    List<Movie> findAll();
 
     Movie getMovieById(int id);
 
-    void addMovie(Movie movie);
+    Movie addMovie(Movie movie);
 
-    void updateMovie(Movie movie);
+    Movie updateMovie(Movie movie);
 
     void deleteMovie(int movieId);
 
