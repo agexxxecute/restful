@@ -3,24 +3,35 @@ package Mapper;
 import DTO.SelectionInDTO;
 import Entity.Movie;
 import Entity.Selection;
+import Repository.Impl.MovieRepositoryImpl;
+import Repository.MovieRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SelectionInDTOMapper {
-    public static Selection map (SelectionInDTO selectionInDTO){
+
+    private MovieRepository movieRepository = new MovieRepositoryImpl();
+
+    public Selection map (SelectionInDTO selectionInDTO){
         Selection selection = new Selection();
         selection.setName(selectionInDTO.getName());
 
         if(selectionInDTO.getMovies() != null && !selectionInDTO.getMovies().isEmpty()) {
-            selection.setMovies(selectionInDTO.getMovies());
+            List<Movie> movies = selectionInDTO.getMovies().stream()
+                            .map(movieRepository::getMovieById)
+                                    .collect(Collectors.toList());
+            selection.setMovies(movies);
         }
         return selection;
     }
 
-    public static SelectionInDTO map (Selection selection){
-        List<Movie> movies = null;
+    public  SelectionInDTO map (Selection selection){
+        List<Integer> movies = null;
         if(selection.getMovies() != null && !selection.getMovies().isEmpty()) {
-            movies = selection.getMovies();
+            movies = selection.getMovies().stream()
+                    .map(Movie::getId)
+                    .collect(Collectors.toList());
         }
         SelectionInDTO selectionInDTO = new SelectionInDTO(selection.getName(),movies);
         return selectionInDTO;

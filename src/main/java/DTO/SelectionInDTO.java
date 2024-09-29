@@ -6,12 +6,12 @@ import java.util.List;
 
 public class SelectionInDTO {
     private String name;
-    private List<Movie> movies;
+    private List<Integer> movies;
 
     public SelectionInDTO() {
     }
 
-    public SelectionInDTO(String name, List<Movie> movies) {
+    public SelectionInDTO(String name, List<Integer> movies) {
         this.name = name;
         this.movies = movies;
     }
@@ -20,7 +20,7 @@ public class SelectionInDTO {
         return name;
     }
 
-    public List<Movie> getMovies() {
+    public List<Integer> getMovies() {
         return movies;
     }
 }

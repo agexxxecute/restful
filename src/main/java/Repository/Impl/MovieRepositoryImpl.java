@@ -1,6 +1,7 @@
 package Repository.Impl;
 
 import DB.DBUtil;
+import DTO.MovieInDTO;
 import DTO.MovieToSelectionNoIDDTO;
 import Entity.*;
 import Mapper.MovieToSelectionNoIDDTOMapper;
@@ -75,8 +76,16 @@ public class MovieRepositoryImpl implements MovieRepository {
             }
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
+            Movie newMovie = new Movie();
             if(rs.next()) {
-                movie = createMovie(rs);
+                newMovie = createMovie(rs);
+            }
+            if(movie.getSelections() != null && !movie.getSelections().isEmpty()){
+                for(int i = 0; i < movie.getSelections().size(); i++){
+                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(newMovie.getId(), movie.getSelections().get(i).getId());
+                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
+                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                }
             }
         } catch (SQLException e){
             e.printStackTrace();

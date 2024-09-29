@@ -23,6 +23,8 @@ public class SelectionServiceImpl implements SelectionService {
 
     private MovieRepositoryImpl movieRepository = MovieRepositoryImpl.getInstance();
     private SelectionRepositoryImpl selectionRepository = new SelectionRepositoryImpl();
+    private SelectionUpdateDTOMapper selectionUpdateDTOMapper = new SelectionUpdateDTOMapper();
+    private SelectionInDTOMapper selectionInDTOMapper = new SelectionInDTOMapper();
     private static SelectionServiceImpl instance;
 
 
@@ -48,13 +50,13 @@ public class SelectionServiceImpl implements SelectionService {
     }
 
     public SelectionInDTO add(SelectionInDTO selectionInDTO){
-        Selection selection = SelectionInDTOMapper.map(selectionInDTO);
+        Selection selection = selectionInDTOMapper.map(selectionInDTO);
         selection = selectionRepository.addSelection(selection);
-        return SelectionInDTOMapper.map(selection);
+        return selectionInDTOMapper.map(selection);
     }
 
     public SelectionUpdateDTO update(SelectionUpdateDTO selectionUpdateDTO){
-        Selection selection = SelectionUpdateDTOMapper.map(selectionUpdateDTO);
+        Selection selection = selectionUpdateDTOMapper.map(selectionUpdateDTO);
         return SelectionUpdateDTOMapper.map(selectionRepository.updateSelection(selection));
     }
 
@@ -68,11 +70,6 @@ public class SelectionServiceImpl implements SelectionService {
                 .map(MovieToSelection::getMovieId)
                 .map(movieRepository::getMovieById)
                 .collect(Collectors.toList());
-       /* for (MovieToSelection movieToSelection : movieIds) {
-            int movieId = movieToSelection.getMovieId();
-            Movie tempMovie = movieRepository.getMovieById(movieId);
-
-        }*/
         selection.setMovies(movies);
         return selection;
     }

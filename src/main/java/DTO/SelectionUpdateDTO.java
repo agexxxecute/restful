@@ -7,12 +7,12 @@ import java.util.List;
 public class SelectionUpdateDTO {
     private Integer id;
     private String name;
-    private List<Movie> movies;
+    private List<Integer> movies;
 
     public SelectionUpdateDTO() {
     }
 
-    public SelectionUpdateDTO(Integer id, String name, List<Movie> movies) {
+    public SelectionUpdateDTO(Integer id, String name, List<Integer> movies) {
         this.id = id;
         this.name = name;
         this.movies = movies;
@@ -26,7 +26,7 @@ public class SelectionUpdateDTO {
         return name;
     }
 
-    public List<Movie> getMovies() {
+    public List<Integer> getMovies() {
         return movies;
     }
 }

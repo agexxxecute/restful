@@ -52,8 +52,16 @@ public class SelectionRepositoryImpl implements SelectionRepository {
             preparedStatement.setString(1, selection.getName());
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            Selection newSelection = new Selection();
             if(resultSet.next()){
-                selection = createSelection(resultSet);
+                newSelection = createSelection(resultSet);
+            }
+            if(selection.getMovies() != null && !selection.getMovies().isEmpty()){
+                for(int i = 0; i < selection.getMovies().size(); i++){
+                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), newSelection.getId());
+                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
+                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                }
             }
         } catch (SQLException e){
             e.printStackTrace();
@@ -71,7 +79,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
             if(selection.getMovies() != null && !selection.getMovies().isEmpty()){
                 MovieToSelectionRepository.deleteBySelectionId(selection.getId());
                 for(int i = 0; i < selection.getMovies().size(); i++){
-                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getId(), selection.getMovies().get(i).getId());
+                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), selection.getId());
                     MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
                     MovieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }

@@ -10,12 +10,12 @@ public class MovieInDTO {
     private int year;
     private boolean isSerial;
     private Integer director_id;
-    private List<Selection> selections;
+    private List<Integer> selections;
 
     public MovieInDTO() {
     }
 
-    public MovieInDTO(String title, int year, boolean isSerial, Integer director_id, List<Selection> selections) {
+    public MovieInDTO(String title, int year, boolean isSerial, Integer director_id, List<Integer> selections) {
         this.title = title;
         this.year = year;
         this.isSerial = isSerial;
@@ -39,7 +39,7 @@ public class MovieInDTO {
         return director_id;
     }
 
-    public List<Selection> getSelections() {
+    public List<Integer> getSelections() {
         return selections;
     }
 }

@@ -4,10 +4,18 @@ import DTO.DirectorOutDTO;
 import DTO.MovieUpdateDTO;
 import Entity.Director;
 import Entity.Movie;
+import Entity.Selection;
+import Repository.Impl.SelectionRepositoryImpl;
+import Repository.SelectionRepository;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MovieUpdateDTOMapper {
+    private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
 
     private DirectorService directorService = new DirectorServiceImpl();
     public Movie map (MovieUpdateDTO movieUpdateDTO) {
@@ -24,7 +32,10 @@ public class MovieUpdateDTOMapper {
         }
 
         if(movieUpdateDTO.getSelections() != null){
-            movie.setSelections(movieUpdateDTO.getSelections());
+            List<Selection> selections = movieUpdateDTO.getSelections().stream()
+                            .map(selectionRepository::findSelectionById)
+                                    .collect(Collectors.toList());
+            movie.setSelections(selections);
         }
         return movie;
     }

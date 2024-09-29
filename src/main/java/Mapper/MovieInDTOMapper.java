@@ -5,13 +5,20 @@ import DTO.MovieInDTO;
 import Entity.Director;
 import Entity.Movie;
 import Entity.Selection;
+import Repository.Impl.MovieRepositoryImpl;
+import Repository.Impl.SelectionRepositoryImpl;
+import Repository.MovieRepository;
+import Repository.SelectionRepository;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MovieInDTOMapper {
     private DirectorService directorService = new DirectorServiceImpl();
+    private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
+
     public Movie map (MovieInDTO movieInDTO) {
         Movie movie = new Movie();
         movie.setTitle(movieInDTO.getTitle());
@@ -25,21 +32,26 @@ public class MovieInDTOMapper {
         }
 
         if(movieInDTO.getSelections() != null && !movieInDTO.getSelections().isEmpty()) {
-            movie.setSelections(movieInDTO.getSelections());
+            List<Selection> selections = movieInDTO.getSelections().stream()
+                            .map(selectionRepository::findSelectionById)
+                                    .collect(Collectors.toList());
+            movie.setSelections(selections);
         }
 
         return movie;
     }
 
-    public static MovieInDTO map (Movie movie) {
+    public MovieInDTO map (Movie movie) {
         Integer director_id = null;
         if(movie.getDirector() != null) {
             director_id = movie.getDirector().getId();
         }
 
-        List<Selection> selections = null;
+        List<Integer> selections = null;
         if(movie.getSelections() != null && !movie.getSelections().isEmpty()) {
-            selections = movie.getSelections();
+            selections = movie.getSelections().stream()
+                    .map(Selection::getId)
+                    .collect(Collectors.toList());
         }
 
         MovieInDTO movieInDTO = new MovieInDTO(movie.getTitle(), movie.getYear(), movie.isSerial(), director_id, selections);

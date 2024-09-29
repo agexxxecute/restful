@@ -11,12 +11,12 @@ public class MovieUpdateDTO {
     private int year;
     private boolean isSerial;
     private Integer director_id;
-    private List<Selection> selections;
+    private List<Integer> selections;
 
     public MovieUpdateDTO() {
     }
 
-    public MovieUpdateDTO(Integer id, String title, int year, boolean isSerial, Integer director_id, List<Selection> selections) {
+    public MovieUpdateDTO(Integer id, String title, int year, boolean isSerial, Integer director_id, List<Integer> selections) {
         this.id = id;
         this.title = title;
         this.year = year;
@@ -41,7 +41,7 @@ public class MovieUpdateDTO {
         return director_id;
     }
 
-    public List<Selection> getSelections() {
+    public List<Integer> getSelections() {
         return selections;
     }
 
