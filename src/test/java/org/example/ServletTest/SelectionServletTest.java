@@ -118,8 +118,7 @@ public class SelectionServletTest {
         Mockito.doReturn(mockReader).when(mockRequest).getReader();
         Mockito.doReturn("{\"id\": 3" +
                 ",\"name\":\"" + expectedName + "\"" +
-                ",\"movies\": [{\"id\" : 34,"+
-                "\"title\": \"Future Diary\"}]" +
+                ",\"movies\": [4]" +
                 "}", null).when(mockReader).readLine();
 
         selectionServlet.doPut(mockRequest, mockResponse);

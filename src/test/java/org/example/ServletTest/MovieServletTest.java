@@ -163,7 +163,7 @@ public class MovieServletTest {
                 ",\"year\":\"" + expectedYear + "\"" +
                 ",\"isSerial\":\"" + expectedIsSerial + "\"" +
                 ",\"director_id\":\"" + expectedDirectiorId + "\"" +
-                ",\"selections\": [{\"id\" : 2,\"name\": \"Anime\"}]" +
+                ",\"selections\": [2]" +
                 "}", null).when(mockReader).readLine();
 
         movieServlet.doPut(mockRequest, mockResponse);
