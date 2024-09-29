@@ -1,7 +1,6 @@
 package Repository.Impl;
 
 import DB.DBUtil;
-import DTO.MovieInDTO;
 import DTO.MovieToSelectionNoIDDTO;
 import Entity.*;
 import Mapper.MovieToSelectionNoIDDTOMapper;
@@ -16,7 +15,9 @@ import java.util.stream.Collectors;
 
 public class MovieRepositoryImpl implements MovieRepository {
 
-    private static MovieRepositoryImpl instance;
+    private static MovieRepositoryImpl instance = new MovieRepositoryImpl();
+    private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
+    private DirectorRepository directorRepository;
 
     //SELECT movie.title, movie.year FROM movie INNER JOIN movie_selection ON movie.id = movie_selection.movie_id INNER JOIN selection ON movie_selection.selection_id = selection.id
     private static String FIND_MOVIE_BY_ID = "SELECT * FROM movie WHERE id = ?";
@@ -25,7 +26,8 @@ public class MovieRepositoryImpl implements MovieRepository {
     private static String FIND_MOVIE_SELECTIONS = "SELECT * FROM movie_selection WHERE movie_id = ?";
     private static String UPDATE_MOVIE = "UPDATE movie SET title = ?, year = ?, isserial = ?, director_id = ? WHERE id = ?";
     private static String DELETE_MOVIE = "DELETE FROM movie WHERE id = ?";
-    private DirectorRepository directorRepository = new DirectorRepositoryImpl();
+    private String DELETE_DIRECTORS = "UPDATE movie SET director_id = null WHERE director_id = ?";
+
 
     public static MovieRepositoryImpl getInstance() {
         if (instance == null) {
@@ -84,7 +86,7 @@ public class MovieRepositoryImpl implements MovieRepository {
                 for(int i = 0; i < movie.getSelections().size(); i++){
                     MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(newMovie.getId(), movie.getSelections().get(i).getId());
                     MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }
             }
         } catch (SQLException e){
@@ -108,11 +110,11 @@ public class MovieRepositoryImpl implements MovieRepository {
             preparedStatement.executeUpdate();
 
             if(movie.getSelections() != null && !movie.getSelections().isEmpty()){
-                MovieToSelectionRepository.deleteByMovieId(movie.getId());
+                movieToSelectionRepository.deleteByMovieId(movie.getId());
                 for(int i = 0; i < movie.getSelections().size(); i++){
                     MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(movie.getId(), movie.getSelections().get(i).getId());
                     MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }
             }
 
@@ -132,36 +134,24 @@ public class MovieRepositoryImpl implements MovieRepository {
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_MOVIE)){
             preparedStatement.setInt(1, movieId);
-            Movie movie = getMovieById(movieId);
-            if(movie.getSelections() != null && !movie.getSelections().isEmpty()){
-                MovieToSelectionRepository.deleteByMovieId(movie.getId());
-            }
+            movieToSelectionRepository.deleteByMovieId(movieId);
             preparedStatement.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public static void addMovieSelectionList(Movie movie) {
-        List<Integer> newSelections = movie.getSelections().stream()
-                .map(Selection::getId)
-                .collect(Collectors.toList());
-        List<Integer> currentSelections = MovieToSelectionRepository.findByMovieId(movie.getId()).stream()
-                .map(MovieToSelection::getSelectionId)
-                .collect(Collectors.toList());
+    public void removeDirectors(int directorId){
+        try(Connection connection = DBUtil.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DIRECTORS)){
+            preparedStatement.setInt(1, directorId);
+            preparedStatement.executeUpdate();
 
-        for (int i : newSelections) {
-            if (currentSelections.contains(i)) {
-                newSelections.remove(i);
-            }
+        } catch (SQLException e){
+            e.printStackTrace();
         }
-
-        for(int i : newSelections) {
-            MovieToSelection movieToSelection = new MovieToSelection(null, movie.getId(), i);
-            MovieToSelectionRepository.addMovieToSelection(movieToSelection);
-        }
-
     }
+
 
     public List<Movie> getAllSerials(){
         List<Movie> serials = new ArrayList<>();
@@ -179,6 +169,7 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     private Movie createMovie(ResultSet resultSet) throws SQLException {
+        directorRepository = DirectorRepositoryImpl.getInstance();
         Director director = directorRepository.findById(resultSet.getInt("director_id"));
         /*List<MovieToSelection> selectionsIds = MovieToSelectionRepository.findByMovieId(resultSet.getInt("id"));
         List<Selection> selection = selectionsIds.stream()

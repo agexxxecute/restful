@@ -10,8 +10,9 @@ import Mapper.MovieOutDTOMapper;
 import Mapper.MovieInDTOMapper;
 import Mapper.MovieUpdateDTOMapper;
 import Repository.Impl.MovieRepositoryImpl;
-import Repository.MovieToSelectionRepository;
+import Repository.Impl.MovieToSelectionRepositoryImpl;
 import Repository.Impl.SelectionRepositoryImpl;
+import Repository.MovieToSelectionRepository;
 import Repository.SelectionRepository;
 import Service.MovieService;
 
@@ -22,9 +23,10 @@ public class MovieServiceImpl implements MovieService {
 
     private static MovieServiceImpl instance;
     private MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
-    private static MovieInDTOMapper movieInDTOMapper = new MovieInDTOMapper();
-    private static MovieUpdateDTOMapper movieUpdateDTOMapper = new MovieUpdateDTOMapper();
-    private static SelectionRepository selectionRepository = new SelectionRepositoryImpl();
+    private MovieInDTOMapper movieInDTOMapper = new MovieInDTOMapper();
+    private MovieUpdateDTOMapper movieUpdateDTOMapper = new MovieUpdateDTOMapper();
+    private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
+    private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
 
     public static MovieServiceImpl getInstance() {
         if (instance == null) {
@@ -36,7 +38,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieOutDTO> findAll() {
         List<Movie> movies = movieRepository.findAll();
         return movies.stream()
-                .map(MovieServiceImpl::findSelections)
+                .map(instance::findSelections)
                 .map(MovieOutDTOMapper::map)
                 .collect(Collectors.toList());
     }
@@ -71,8 +73,8 @@ public class MovieServiceImpl implements MovieService {
         movieRepository.deleteMovie(movieId);
     }
 
-    private static Movie findSelections(Movie movie) {
-        List<MovieToSelection> selectionsIds = MovieToSelectionRepository.findByMovieId(movie.getId());
+    private Movie findSelections(Movie movie) {
+        List<MovieToSelection> selectionsIds = movieToSelectionRepository.findByMovieId(movie.getId());
         List<Selection> selections = selectionsIds.stream()
                 .map(MovieToSelection::getSelectionId)
                 .map(selectionRepository::findSelectionById)

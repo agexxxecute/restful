@@ -9,11 +9,10 @@ import Entity.Selection;
 import Mapper.SelectionInDTOMapper;
 import Mapper.SelectionOutDTOMapper;
 import Mapper.SelectionUpdateDTOMapper;
-import Repository.MovieRepository;
 import Repository.Impl.MovieRepositoryImpl;
-import Repository.MovieToSelectionRepository;
+import Repository.Impl.MovieToSelectionRepositoryImpl;
 import Repository.Impl.SelectionRepositoryImpl;
-import Repository.SelectionRepository;
+import Repository.MovieToSelectionRepository;
 import Service.SelectionService;
 
 import java.util.List;
@@ -25,6 +24,7 @@ public class SelectionServiceImpl implements SelectionService {
     private SelectionRepositoryImpl selectionRepository = new SelectionRepositoryImpl();
     private SelectionUpdateDTOMapper selectionUpdateDTOMapper = new SelectionUpdateDTOMapper();
     private SelectionInDTOMapper selectionInDTOMapper = new SelectionInDTOMapper();
+    private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
     private static SelectionServiceImpl instance;
 
 
@@ -65,7 +65,7 @@ public class SelectionServiceImpl implements SelectionService {
     }
 
     private  Selection findMovies(Selection selection){
-        List<MovieToSelection> movieIds = MovieToSelectionRepository.findBySelectionId(selection.getId());
+        List<MovieToSelection> movieIds = movieToSelectionRepository.findBySelectionId(selection.getId());
         List<Movie> movies = movieIds.stream()
                 .map(MovieToSelection::getMovieId)
                 .map(movieRepository::getMovieById)

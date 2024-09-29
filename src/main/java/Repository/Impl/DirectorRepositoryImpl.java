@@ -3,6 +3,7 @@ package Repository.Impl;
 import DB.DBUtil;
 import Entity.Director;
 import Repository.DirectorRepository;
+import Repository.MovieRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +11,9 @@ import java.util.List;
 
 public class DirectorRepositoryImpl implements DirectorRepository {
 
-    private static DirectorRepository instance;
+    private static DirectorRepository instance = new DirectorRepositoryImpl();
+
+    private MovieRepository movieRepository;
 
     private static String FIND_ALL_DIRECTORS = "SELECT * FROM director";
     private static String FIND_DIRECTOR_BY_ID = "SELECT * FROM director WHERE id = ?";
@@ -76,6 +79,8 @@ public class DirectorRepositoryImpl implements DirectorRepository {
         boolean result = false;
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DIRECTOR_BY_ID)){
+            movieRepository = MovieRepositoryImpl.getInstance();
+            movieRepository.removeDirectors(id);
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
             result = true;

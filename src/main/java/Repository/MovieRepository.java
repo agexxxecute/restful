@@ -16,5 +16,7 @@ public interface MovieRepository {
 
     void deleteMovie(int movieId);
 
+    void removeDirectors(int movieId);
+
     List<Movie> getAllSerials();
 }

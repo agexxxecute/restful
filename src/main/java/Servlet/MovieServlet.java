@@ -85,6 +85,7 @@ public class MovieServlet extends HttpServlet {
         String[] pathPart =req.getPathInfo().split("/");
         int movieId = Integer.parseInt(pathPart[1]);
         movieService.delete(movieId);
+        resp.setContentType("application/json");
         List<MovieOutDTO> movies = movieService.findAll();
         resp.getWriter().write(gson.toJson(movies));
         /*resp.setContentType("application/json");

@@ -15,6 +15,7 @@ import java.util.List;
 public class SelectionRepositoryImpl implements SelectionRepository {
 
     private static SelectionRepository instance;
+    private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
 
     private static String FIND_BY_ID = "SELECT * FROM selection WHERE id = ?";
     private static String ADD_SELECTION = "INSERT INTO selection (name) VALUES (?)";
@@ -60,7 +61,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
                 for(int i = 0; i < selection.getMovies().size(); i++){
                     MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), newSelection.getId());
                     MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }
             }
         } catch (SQLException e){
@@ -77,11 +78,11 @@ public class SelectionRepositoryImpl implements SelectionRepository {
             preparedStatement.executeUpdate();
 
             if(selection.getMovies() != null && !selection.getMovies().isEmpty()){
-                MovieToSelectionRepository.deleteBySelectionId(selection.getId());
+                movieToSelectionRepository.deleteBySelectionId(selection.getId());
                 for(int i = 0; i < selection.getMovies().size(); i++){
                     MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), selection.getId());
                     MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    MovieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
                 }
             }
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -100,7 +101,9 @@ public class SelectionRepositoryImpl implements SelectionRepository {
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SELECTION)){
             preparedStatement.setInt(1, selectionId);
+            movieToSelectionRepository.deleteBySelectionId(selectionId);
             preparedStatement.executeUpdate();
+
             result = true;
         } catch (SQLException e){
             e.printStackTrace();
