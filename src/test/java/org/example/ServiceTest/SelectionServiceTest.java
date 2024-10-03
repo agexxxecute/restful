@@ -97,7 +97,7 @@ public class SelectionServiceTest {
 
     @Test
     void findById(){
-        Integer expectedId = 1;
+        int expectedId = 1;
         String expectedName = "testName";
         Selection selection = new Selection(1 ,expectedName, null);
         Mockito.doReturn(selection).when(mockSelectionRepository).findSelectionById(Mockito.anyInt());

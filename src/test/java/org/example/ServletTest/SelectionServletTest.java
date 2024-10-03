@@ -75,23 +75,44 @@ public class SelectionServletTest {
 
     @Test
     void doGetAll() throws IOException, ServletException {
-        Mockito.doReturn("selecion/all").when(mockRequest).getPathInfo();
+        Mockito.doReturn("selection/all").when(mockRequest).getPathInfo();
         selectionServlet.doGet(mockRequest, mockResponse);
         Mockito.verify(mockSelectionService).findAll();
     }
 
     @Test
     void doGetById() throws IOException, ServletException {
-        Mockito.doReturn("selecion/3").when(mockRequest).getPathInfo();
+        Mockito.doReturn("selection/3").when(mockRequest).getPathInfo();
         selectionServlet.doGet(mockRequest, mockResponse);
         Mockito.verify(mockSelectionService).findById(Mockito.anyInt());
     }
 
     @Test
+    void doGetBadRequest() throws IOException, ServletException {
+        Mockito.doReturn("selection/aaa").when(mockRequest).getPathInfo();
+        selectionServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doGetUnexicted() throws IOException, ServletException {
+        Mockito.doReturn("selection/100").when(mockRequest).getPathInfo();
+        selectionServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doDelete() throws IOException, ServletException {
-        Mockito.doReturn("selecion/4").when(mockRequest).getPathInfo();
+        Mockito.doReturn("selection/4").when(mockRequest).getPathInfo();
         selectionServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockSelectionService).delete(Mockito.anyInt());
+    }
+
+    @Test
+    void doDeleteException() throws IOException, ServletException {
+        Mockito.doReturn("selection/abc").when(mockRequest).getPathInfo();
+        selectionServlet.doDelete(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
@@ -112,6 +133,17 @@ public class SelectionServletTest {
     }
 
     @Test
+    void doPostException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        selectionServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
     void doPut() throws IOException, ServletException {
         String expectedName = "name";
 
@@ -127,6 +159,17 @@ public class SelectionServletTest {
 
         SelectionUpdateDTO selectionUpdateDTO = argumentCaptor.getValue();
         Assertions.assertEquals(expectedName, selectionUpdateDTO.getName());
+    }
+
+    @Test
+    void doPutException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        selectionServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
 }

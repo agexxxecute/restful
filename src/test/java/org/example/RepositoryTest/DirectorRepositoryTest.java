@@ -108,7 +108,7 @@ public class DirectorRepositoryTest {
     }
 
     @Test
-    void findUnexisting(){
+    void getNotFound(){
         Director director = directorRepository.findById(0);
         Assertions.assertNull(director);
     }

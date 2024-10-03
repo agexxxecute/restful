@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 public class SelectionUpdateDTOMapper {
 
-    private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
     private MovieRepository movieRepository = new MovieRepositoryImpl();
 
     public Selection map (SelectionUpdateDTO selectionUpdateDTO) {
@@ -23,7 +22,6 @@ public class SelectionUpdateDTOMapper {
         selection.setName(selectionUpdateDTO.getName());
         List<Movie> movies = null;
         if(selectionUpdateDTO.getMovies() != null && !selectionUpdateDTO.getMovies().isEmpty()) {
-            movies = new ArrayList<Movie>();
             movies = selectionUpdateDTO.getMovies().stream()
                             .map(movieRepository::getMovieById)
                                     .collect(Collectors.toList());

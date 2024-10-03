@@ -1,8 +1,6 @@
 package Mapper;
 
 import DTO.MovieNoSelectionDTO;
-import DTO.MovieOutDTO;
-import DTO.SelectionNoIdDTO;
 import DTO.SelectionOutDTO;
 import Entity.Selection;
 

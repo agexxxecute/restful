@@ -5,10 +5,8 @@ import DTO.DirectorOutDTO;
 import Entity.Director;
 import Repository.DirectorRepository;
 import Repository.Impl.DirectorRepositoryImpl;
-import Repository.Impl.MovieRepositoryImpl;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
-import Service.MovieService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -109,8 +107,6 @@ public class DirectorServiceTest {
         Integer result = argumentCaptor.getValue();
         Assertions.assertEquals(expectedId, result);
     }
-
-
 
     @Test
     void findById(){

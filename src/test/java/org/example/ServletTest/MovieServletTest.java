@@ -37,8 +37,6 @@ public class MovieServletTest {
     @Mock
     private BufferedReader mockReader;
 
-    //private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.4");
-
     private static void setMock(MovieServiceImpl mock){
         try {
             Field instance = MovieServiceImpl.class.getDeclaredField("instance");
@@ -46,20 +44,9 @@ public class MovieServletTest {
             oldInstance = (MovieServiceImpl) instance.get(instance);
             instance.set(instance,mock);
         } catch (Exception e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
-
-
-//    @BeforeAll
-//    public static void setUp() throws SQLException, IOException {
-//        postgreSQLContainer.start();
-//        Connection connection = DriverManager.getConnection(postgreSQLContainer.getJdbcUrl(), postgreSQLContainer.getUsername(), postgreSQLContainer.getPassword());
-//        ScriptRunner scriptRunner = new ScriptRunner(connection);
-//        scriptRunner.setDelimiter(";");
-//        Reader scriptReader = Resources.getResourceAsReader("init.sql");
-//        scriptRunner.runScript(scriptReader);
-//    }
 
     @BeforeAll
     static void beforeMock(){
@@ -73,11 +60,6 @@ public class MovieServletTest {
         Mockito.doReturn(new PrintWriter(Writer.nullWriter())).when(mockResponse).getWriter();
     }
 
-//    @AfterAll
-//    public static void tearDown() {
-//        postgreSQLContainer.stop();
-//    }
-
     @AfterAll
     static void afterAll() throws Exception {
         Field instance = MovieServiceImpl.class.getDeclaredField("instance");
@@ -89,18 +71,6 @@ public class MovieServletTest {
     void tearDownMock() {
         Mockito.reset(mockMovieService);
     }
-
-//    @Test
-//    public void test2() throws SQLException, IOException {
-//        Connection connection = DriverManager.getConnection(postgreSQLContainer.getJdbcUrl(), postgreSQLContainer.getUsername(), postgreSQLContainer.getPassword());
-//        Statement statement = connection.createStatement();
-//
-//
-//
-//        statement.execute("INSERT INTO movie(title) VALUES ('a')");
-//        ResultSet resultSet = statement.executeQuery("SELECT * FROM movie");
-//        assert resultSet.next();
-//    }
 
     @Test
     void doGetAll() throws IOException, ServletException {
@@ -124,9 +94,23 @@ public class MovieServletTest {
     }
 
     @Test
+    void doGetBadRequest() throws IOException, ServletException {
+        Mockito.doReturn("movie/badrequest").when(mockRequest).getPathInfo();
+        movieServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doGetNotFound() throws IOException, ServletException {
+        Mockito.doReturn("movie/1000").when(mockRequest).getPathInfo();
+        movieServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doPost() throws IOException, ServletException {
         String expectedTitle = "New Movie";
-        int expectedYear = 0;
+        int expectedYear = 2000;
         boolean expectedIsSerial = false;
         int expectedDirectiorId = 5;
 
@@ -151,9 +135,20 @@ public class MovieServletTest {
     }
 
     @Test
+    void doPostException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        movieServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
     void doPut() throws IOException, ServletException {
         String expectedTitle = "New Movie";
-        int expectedYear = 0;
+        int expectedYear = 2000;
         boolean expectedIsSerial = false;
         int expectedDirectiorId = 5;
 
@@ -180,10 +175,28 @@ public class MovieServletTest {
     }
 
     @Test
+    void doPutException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        movieServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
     void doDelete() throws IOException, ServletException {
         Mockito.doReturn("movie/15").when(mockRequest).getPathInfo();
         movieServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockMovieService).delete(Mockito.anyInt());
+    }
+
+    @Test
+    void doDeleteBadRequest() throws IOException, ServletException {
+        Mockito.doReturn("movie/badrequest").when(mockRequest).getPathInfo();
+        movieServlet.doDelete(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
 

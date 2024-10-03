@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 public class MovieUpdateDTOMapper {
     private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
+    private DirectorOutDTOMapper directorOutDTOMapper = new DirectorOutDTOMapper();
 
     private DirectorService directorService = new DirectorServiceImpl();
     public Movie map (MovieUpdateDTO movieUpdateDTO) {
@@ -27,7 +28,7 @@ public class MovieUpdateDTOMapper {
         Integer director_id = movieUpdateDTO.getDirector_id();
         if(director_id != null && director_id > 0) {
             DirectorOutDTO directorOutDTO = directorService.findById(director_id);
-            Director director = DirectorOutDTOMapper.map(directorOutDTO);
+            Director director = directorOutDTOMapper.map(directorOutDTO);
             movie.setDirector(director);
         }
 

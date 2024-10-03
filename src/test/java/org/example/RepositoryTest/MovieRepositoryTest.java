@@ -2,8 +2,6 @@ package org.example.RepositoryTest;
 
 import Entity.Director;
 import Entity.Movie;
-import Repository.DirectorRepository;
-import Repository.Impl.DirectorRepositoryImpl;
 import Repository.Impl.MovieRepositoryImpl;
 import Repository.MovieRepository;
 import com.github.dockerjava.api.model.ExposedPort;

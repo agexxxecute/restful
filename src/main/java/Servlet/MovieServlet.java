@@ -4,7 +4,6 @@ import DTO.MovieInDTO;
 import DTO.MovieOutDTO;
 import DTO.MovieUpdateDTO;
 import Service.Impl.MovieServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
@@ -18,16 +17,8 @@ import java.util.List;
 
 @WebServlet (urlPatterns = {"/movie/*"})
 public class MovieServlet extends HttpServlet {
-    private Gson gson = new Gson();
-    private ObjectMapper objectMapper;
-    private MovieServiceImpl movieService = MovieServiceImpl.getInstance();
-
-    public MovieServlet() {
-        this.objectMapper = new ObjectMapper();
-    }
-
-
-
+    private final Gson gson = new Gson();
+    private final MovieServiceImpl movieService = MovieServiceImpl.getInstance();
 
     private static String getJson(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -53,12 +44,21 @@ public class MovieServlet extends HttpServlet {
                 resp.getWriter().write(gson.toJson(serials));
             } else { resp.getWriter().write("No serials"); }
         } else {
-            int movieId = Integer.parseInt(pathPart[1]);
-            MovieOutDTO movie = movieService.findById(movieId);
-            resp.setContentType("application/json");
-            if(movie!=null) {
-                resp.getWriter().write(gson.toJson(movie));
-            } else resp.getWriter().write("No such movie");
+
+            try {
+                int movieId = Integer.parseInt(pathPart[1]);
+                MovieOutDTO movie = movieService.findById(movieId);
+                resp.setContentType("application/json");
+                if (movie != null) {
+                    resp.getWriter().write(gson.toJson(movie));
+                } else {
+                    resp.getWriter().write("No such movie");
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
+            } catch (Exception e) {
+                resp.getWriter().write("Bad request");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
         }
 
     }
@@ -67,32 +67,41 @@ public class MovieServlet extends HttpServlet {
         resp.setContentType("application/json");
         String json = getJson(req);
         MovieInDTO movie = gson.fromJson(json, MovieInDTO.class);
-        movieService.add(movie);
-        List<MovieOutDTO> movies = movieService.findAll();
-        resp.getWriter().write(gson.toJson(movies));
+        if(movie.getTitle() == null || movie.getYear() == 0){
+            resp.getWriter().write("Bad request");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } else {
+            movieService.add(movie);
+            List<MovieOutDTO> movies = movieService.findAll();
+            resp.getWriter().write(gson.toJson(movies));
+        }
     }
 
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
         MovieUpdateDTO movie = gson.fromJson(json, MovieUpdateDTO.class);
-        movieService.update(movie);
-        List<MovieOutDTO> movies = movieService.findAll();
-        resp.getWriter().write(gson.toJson(movies));
+        if(movie.getTitle() == null || movie.getYear() == 0){
+            resp.getWriter().write("Bad request");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } else {
+            movieService.update(movie);
+            List<MovieOutDTO> movies = movieService.findAll();
+            resp.getWriter().write(gson.toJson(movies));
+        }
     }
 
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String[] pathPart =req.getPathInfo().split("/");
-        int movieId = Integer.parseInt(pathPart[1]);
-        movieService.delete(movieId);
-        resp.setContentType("application/json");
-        List<MovieOutDTO> movies = movieService.findAll();
-        resp.getWriter().write(gson.toJson(movies));
-        /*resp.setContentType("application/json");
-        String json = getJson(req);
-        MovieUpdateDTO movie = gson.fromJson(json, MovieUpdateDTO.class);
-        movieService.delete(movie);
-        List<MovieOutDTO> movies = movieService.findAll();
-        resp.getWriter().write(gson.toJson(movies));*/
+        try {
+            int movieId = Integer.parseInt(pathPart[1]);
+            movieService.delete(movieId);
+            resp.setContentType("application/json");
+            List<MovieOutDTO> movies = movieService.findAll();
+            resp.getWriter().write(gson.toJson(movies));
+        } catch (Exception e) {
+            resp.getWriter().write("Bad request");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 }

@@ -2,10 +2,8 @@ package Servlet;
 
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
-import Entity.Director;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
@@ -22,7 +20,6 @@ import java.util.Optional;
 public class DirectorServlet extends HttpServlet {
     private DirectorService directorService = new DirectorServiceImpl();
     private Gson gson = new Gson();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static String getJson(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -40,7 +37,6 @@ public class DirectorServlet extends HttpServlet {
         String[] pathPart = req.getPathInfo().split("/");
         if("all".equals(pathPart[1])) {
             List<DirectorOutDTO> directors = directorService.findAll();
-
             resp.getWriter().println(gson.toJson(directors));
         } else {
             int directorId = Integer.parseInt(pathPart[1]);
@@ -61,7 +57,7 @@ public class DirectorServlet extends HttpServlet {
         try{
             directorInDTO = Optional.ofNullable(gson.fromJson(json, DirectorInDTO.class));
             if(directorInDTO.get().getFirstName()!=null && directorInDTO.get().getLastName()!=null) {
-                DirectorOutDTO directorOutDTO = directorService.add(directorInDTO.get());
+                directorService.add(directorInDTO.get());
                 List<DirectorOutDTO> directors = directorService.findAll();
                 resp.getWriter().println(gson.toJson(directors));
             } else {
@@ -87,27 +83,18 @@ public class DirectorServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Bad request");
         }
-
-        /*
-        directorService.update(directorOutDTO);
-        List<DirectorOutDTO> directors = directorService.findAll();
-        //resp.setContentType("application/json");
-        resp.getWriter().println(gson.toJson(directors));*/
     }
 
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String[] pathPart = req.getPathInfo().split("/");
-        int directorId = Integer.parseInt(pathPart[1]);
-        directorService.delete(directorId);
+        try {
+            int directorId = Integer.parseInt(pathPart[1]);
+            directorService.delete(directorId);
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
         List<DirectorOutDTO> directors = directorService.findAll();
         resp.setContentType("application/json");
         resp.getWriter().println(gson.toJson(directors));
-
-        /*resp.setContentType("application/json");
-        String json = getJson(req);
-        DirectorOutDTO directorOutDTO = gson.fromJson(json, DirectorOutDTO.class);
-        directorService.delete(directorOutDTO);
-        List<DirectorOutDTO> directors = directorService.findAll();
-        resp.getWriter().println(gson.toJson(directors));*/
     }
 }

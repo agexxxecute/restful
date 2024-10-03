@@ -102,7 +102,7 @@ public class MovieServiceTest {
 
     @Test
     void findById(){
-        Integer expectedId = 1;
+        int expectedId = 1;
         String expectedTitle = "testTitle";
         int expectedYear = 2018;
         boolean expectedIsSerial = false;

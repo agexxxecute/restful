@@ -3,10 +3,7 @@ package org.example.RepositoryTest;
 
 import Entity.Director;
 import Entity.Movie;
-import Entity.MovieToSelection;
 import Entity.Selection;
-import Repository.DirectorRepository;
-import Repository.Impl.DirectorRepositoryImpl;
 import Repository.Impl.SelectionRepositoryImpl;
 import Repository.SelectionRepository;
 import com.github.dockerjava.api.model.ExposedPort;

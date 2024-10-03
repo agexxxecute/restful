@@ -4,7 +4,6 @@ import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
 import Service.Impl.DirectorServiceImpl;
 import Servlet.DirectorServlet;
-import org.apache.ibatis.javassist.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +44,7 @@ public class DirectorServletTest {
             oldInstance = (DirectorServiceImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -99,6 +98,13 @@ public class DirectorServletTest {
         Mockito.doReturn("director/5").when(mockRequest).getPathInfo();
         directorServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockDirectorService).delete(Mockito.anyInt());
+    }
+
+    @Test
+    void doDeleteException() throws IOException, ServletException {
+        Mockito.doReturn("director/abc").when(mockRequest).getPathInfo();
+        directorServlet.doDelete(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test

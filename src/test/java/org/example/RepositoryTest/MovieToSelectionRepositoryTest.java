@@ -2,9 +2,7 @@ package org.example.RepositoryTest;
 
 import Entity.MovieToSelection;
 import Repository.Impl.MovieToSelectionRepositoryImpl;
-import Repository.Impl.SelectionRepositoryImpl;
 import Repository.MovieToSelectionRepository;
-import Repository.SelectionRepository;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.PortBinding;
@@ -15,8 +13,6 @@ import org.testcontainers.ext.ScriptUtils;
 import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.util.List;
 
 @Testcontainers
 @Tag("DockerRequired")

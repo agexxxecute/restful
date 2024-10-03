@@ -32,15 +32,14 @@ public class DirectorServiceImpl implements DirectorService {
     public DirectorOutDTO add(DirectorInDTO directorInDTO){
         Director director = DirectorInDTOMapper.map(directorInDTO);
         director = directorRepository.addDirector(director);
-        DirectorOutDTO directorOutDTO = DirectorOutDTOMapper.map(director);
-        return directorOutDTO;
+        return directorOutDTOMapper.map(director);
 
     }
 
     public DirectorOutDTO update(DirectorOutDTO directorOutDTO){
-        Director director = DirectorOutDTOMapper.map(directorOutDTO);
+        Director director = directorOutDTOMapper.map(directorOutDTO);
         directorRepository.updateDirector(director);
-        return DirectorOutDTOMapper.map(director);
+        return directorOutDTOMapper.map(director);
     }
 
     public Integer delete(int directorId){
@@ -49,6 +48,6 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     public DirectorOutDTO findById(int id){
-        return DirectorOutDTOMapper.map(directorRepository.findById(id));
+        return directorOutDTOMapper.map(directorRepository.findById(id));
     }
 }

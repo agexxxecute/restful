@@ -11,7 +11,6 @@ import Repository.MovieToSelectionRepository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MovieRepositoryImpl implements MovieRepository {
 
@@ -19,7 +18,6 @@ public class MovieRepositoryImpl implements MovieRepository {
     private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
     private DirectorRepository directorRepository;
 
-    //SELECT movie.title, movie.year FROM movie INNER JOIN movie_selection ON movie.id = movie_selection.movie_id INNER JOIN selection ON movie_selection.selection_id = selection.id
     private static String FIND_MOVIE_BY_ID = "SELECT * FROM movie WHERE id = ?";
     private static String FIND_ALL_SERIALS = "SELECT * FROM movie WHERE isserial = true";
     private static String CREATE_MOVIE = "INSERT INTO movie (title, year, isserial, director_id) VALUES (?, ?, ?, ?)";
@@ -174,11 +172,6 @@ public class MovieRepositoryImpl implements MovieRepository {
     private Movie createMovie(ResultSet resultSet) throws SQLException {
         directorRepository = DirectorRepositoryImpl.getInstance();
         Director director = directorRepository.findById(resultSet.getInt("director_id"));
-        /*List<MovieToSelection> selectionsIds = MovieToSelectionRepository.findByMovieId(resultSet.getInt("id"));
-        List<Selection> selection = selectionsIds.stream()
-                .map(MovieToSelection::getSelectionId)
-                .map(SelectionRepository::findSelectionById)
-                .collect(Collectors.toList());*/
         Movie movie = new Movie(resultSet.getInt("id"), resultSet.getString("title"),resultSet.getInt("year"), resultSet.getBoolean("isserial"), director, null);
         return movie;
     }
