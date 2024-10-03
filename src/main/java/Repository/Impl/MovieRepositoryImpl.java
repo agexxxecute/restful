@@ -66,6 +66,7 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     public Movie addMovie(Movie movie) {
+        Movie newMovie = null;
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(CREATE_MOVIE, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, movie.getTitle());
@@ -78,7 +79,6 @@ public class MovieRepositoryImpl implements MovieRepository {
             }
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
-            Movie newMovie = new Movie();
             if(rs.next()) {
                 newMovie = createMovie(rs);
             }
@@ -92,7 +92,7 @@ public class MovieRepositoryImpl implements MovieRepository {
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return movie;
+        return newMovie;
     }
 
     public Movie updateMovie(Movie movie) {
@@ -130,15 +130,18 @@ public class MovieRepositoryImpl implements MovieRepository {
         return movie;
     }
 
-    public void deleteMovie(int movieId) {
+    public boolean deleteMovie(int movieId) {
+        boolean result = false;
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_MOVIE)){
             preparedStatement.setInt(1, movieId);
             movieToSelectionRepository.deleteByMovieId(movieId);
             preparedStatement.executeUpdate();
+            result = true;
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return result;
     }
 
     public void removeDirectors(int directorId){

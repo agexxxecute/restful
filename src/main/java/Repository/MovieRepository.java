@@ -14,7 +14,7 @@ public interface MovieRepository {
 
     Movie updateMovie(Movie movie);
 
-    void deleteMovie(int movieId);
+    boolean deleteMovie(int movieId);
 
     void removeDirectors(int movieId);
 

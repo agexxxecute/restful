@@ -4,6 +4,7 @@ import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
 import Service.Impl.DirectorServiceImpl;
 import Servlet.DirectorServlet;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -87,6 +88,13 @@ public class DirectorServletTest {
     }
 
     @Test
+    void doGetByUnexistedId() throws IOException, ServletException {
+        Mockito.doReturn("director/0").when(mockRequest).getPathInfo();
+        directorServlet.doGet(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
     void doDelete() throws IOException, ServletException {
         Mockito.doReturn("director/5").when(mockRequest).getPathInfo();
         directorServlet.doDelete(mockRequest, mockResponse);
@@ -113,6 +121,18 @@ public class DirectorServletTest {
     }
 
     @Test
+    void doPostException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        directorServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+    }
+
+    @Test
     void doPut() throws IOException, ServletException {
         String exprectedFirstName = "firstName";
         String exprectedLastName = "lastName";
@@ -131,6 +151,17 @@ public class DirectorServletTest {
         DirectorOutDTO directorOutDTO = argumentCaptor.getValue();
         Assertions.assertEquals(exprectedFirstName, directorOutDTO.getFirstName());
         Assertions.assertEquals(exprectedLastName, directorOutDTO.getLastName());
+    }
+
+    @Test
+    void doPutException() throws IOException, ServletException {
+        Mockito.doReturn(mockReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockReader).readLine();
+        directorServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
 

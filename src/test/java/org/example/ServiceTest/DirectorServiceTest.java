@@ -45,7 +45,6 @@ public class DirectorServiceTest {
         mockDirectorRepository = Mockito.mock(DirectorRepositoryImpl.class);
         setMock(mockDirectorRepository);
         directorService = DirectorServiceImpl.getInstance();
-        System.out.println(0);
 
 
     }

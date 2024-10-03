@@ -4,8 +4,11 @@ import DTO.SelectionInDTO;
 import DTO.SelectionOutDTO;
 import DTO.SelectionUpdateDTO;
 import Entity.Selection;
+import Repository.Impl.MovieRepositoryImpl;
+import Repository.Impl.MovieToSelectionRepositoryImpl;
 import Repository.Impl.SelectionRepositoryImpl;
-import Repository.SelectionRepository;
+import Repository.MovieRepository;
+import Repository.MovieToSelectionRepository;
 import Service.Impl.SelectionServiceImpl;
 import Service.SelectionService;
 import org.junit.jupiter.api.*;
@@ -19,17 +22,32 @@ import java.lang.reflect.Field;
 public class SelectionServiceTest {
     @Mock
     private static SelectionRepositoryImpl mockSelectionRepository;
+    private static MovieToSelectionRepositoryImpl mockMovieToSelectionRepository;
+    private static MovieRepositoryImpl mockMovieRepository;
     @InjectMocks
     private static SelectionService selectionService;
     @InjectMocks
-    private static SelectionRepositoryImpl oldInstance;
+    private static SelectionRepositoryImpl oldSelectionRepository;
+    private static MovieToSelectionRepository oldMovieToSelectionRepository;
+    private static MovieRepository oldMovieRepository;
 
-    private static void setMock(SelectionRepositoryImpl mock){
+    private static void setMock(SelectionRepositoryImpl mockSelectionRepository, MovieToSelectionRepositoryImpl mockMovieToSelectionRepository, MovieRepositoryImpl mockMovieRepository) {
         try{
             Field instance = SelectionRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
-            oldInstance = (SelectionRepositoryImpl) instance.get(instance);
-            instance.set(instance, mock);
+            oldSelectionRepository = (SelectionRepositoryImpl) instance.get(instance);
+            instance.set(instance, mockSelectionRepository);
+
+            Field instance2 = MovieToSelectionRepositoryImpl.class.getDeclaredField("instance");
+            instance2.setAccessible(true);
+            oldMovieToSelectionRepository = (MovieToSelectionRepositoryImpl) instance2.get(instance2);
+            instance2.set(instance2, mockMovieToSelectionRepository);
+
+            Field instance3 = MovieRepositoryImpl.class.getDeclaredField("instance");
+            instance3.setAccessible(true);
+            oldMovieRepository = (MovieRepositoryImpl) instance3.get(instance3);
+            instance3.set(instance3, mockMovieRepository);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -38,21 +56,32 @@ public class SelectionServiceTest {
     @BeforeAll
     static void beforeAll(){
         mockSelectionRepository = Mockito.mock(SelectionRepositoryImpl.class);
-        setMock(mockSelectionRepository);
+        mockMovieToSelectionRepository = Mockito.mock(MovieToSelectionRepositoryImpl.class);
+        mockMovieRepository = Mockito.mock(MovieRepositoryImpl.class);
+        setMock(mockSelectionRepository, mockMovieToSelectionRepository, mockMovieRepository);
         selectionService = SelectionServiceImpl.getInstance();
-        System.out.println(0);
     }
 
     @BeforeEach
     void setUp(){
         Mockito.reset(mockSelectionRepository);
+        Mockito.reset(mockMovieToSelectionRepository);
+        Mockito.reset(mockMovieRepository);
     }
 
     @AfterAll
     static void afterAll() throws Exception{
         Field instance = SelectionRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(instance, oldInstance);
+        instance.set(instance, oldSelectionRepository);
+
+        Field instance2 = MovieToSelectionRepositoryImpl.class.getDeclaredField("instance");
+        instance2.setAccessible(true);
+        instance2.set(instance2, oldMovieToSelectionRepository);
+
+        Field instance3 = MovieRepositoryImpl.class.getDeclaredField("instance");
+        instance3.setAccessible(true);
+        instance3.set(instance3, oldMovieRepository);
     }
 
     @AfterEach

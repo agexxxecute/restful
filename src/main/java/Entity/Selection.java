@@ -3,14 +3,14 @@ package Entity;
 import java.util.List;
 
 public class Selection {
-    private int id;
+    private Integer id;
     private String name;
     private List<Movie> movies;
 
     public Selection() {
     }
 
-    public Selection(int id, String name, List<Movie> movies) {
+    public Selection(Integer id, String name, List<Movie> movies) {
         this.id = id;
         this.name = name;
         this.movies = movies;

@@ -13,7 +13,7 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(int id, String title, int year, boolean isSerial, Director director, List<Selection> selections) {
+    public Movie(Integer id, String title, int year, boolean isSerial, Director director, List<Selection> selections) {
         this.id = id;
         this.title = title;
         this.year = year;

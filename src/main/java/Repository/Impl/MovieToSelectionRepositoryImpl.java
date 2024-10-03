@@ -4,20 +4,23 @@ import DB.DBUtil;
 import Entity.MovieToSelection;
 import Repository.MovieToSelectionRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepository {
 
+    private static MovieToSelectionRepository instance = new MovieToSelectionRepositoryImpl();
+
     private static String FIND_BY_MOVIE_ID = "SELECT * FROM movie_selection WHERE movie_id=?";
     private static String FIND_BY_SELECTION_ID = "SELECT * FROM movie_selection WHERE selection_id=?";
     private static String ADD_MOVIE_TO_SELECTION = "INSERT INTO movie_selection (movie_id, selection_id) VALUES (?,?)";
     private static String DELETE_BY_MOVIE_ID = "DELETE FROM movie_selection WHERE movie_id=?";
-   private static String DELETE_BY_SELECTION_ID = "DELETE FROM movie_selection WHERE selection_id=?";
+    private static String DELETE_BY_SELECTION_ID = "DELETE FROM movie_selection WHERE selection_id=?";
+
+    public static MovieToSelectionRepository getInstance() {
+        return instance;
+    }
 
     public List<MovieToSelection> findByMovieId(int movieId) {
         List<MovieToSelection> movieToSelections = new ArrayList<>();
@@ -59,35 +62,48 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
         return movieToSelections;
     }
 
-    public void addMovieToSelection(MovieToSelection movieToSelection) {
+    public MovieToSelection addMovieToSelection(MovieToSelection movieToSelection) {
+        MovieToSelection newMovieToSelection = new MovieToSelection();
         try(Connection connection = DBUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(ADD_MOVIE_TO_SELECTION)){
+        PreparedStatement preparedStatement = connection.prepareStatement(ADD_MOVIE_TO_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setInt(1, movieToSelection.getMovieId());
             preparedStatement.setInt(2, movieToSelection.getSelectionId());
             preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if(resultSet.next()) {
+                newMovieToSelection.setId(resultSet.getInt(1));
+                newMovieToSelection.setMovieId(resultSet.getInt(2));
+                newMovieToSelection.setSelectionId(resultSet.getInt(3));
+            }
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return movieToSelection;
     }
 
-    public void deleteByMovieId(int movieId) {
+    public boolean deleteByMovieId(int movieId) {
+        boolean result = false;
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_MOVIE_ID)){
             preparedStatement.setInt(1, movieId);
             preparedStatement.executeUpdate();
+            result = true;
         } catch (SQLException e){
             e.printStackTrace();
         }
-
+        return result;
     }
 
-    public void deleteBySelectionId(int selectionId) {
+    public boolean deleteBySelectionId(int selectionId) {
+        boolean result = false;
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_SELECTION_ID)){
             preparedStatement.setInt(1, selectionId);
             preparedStatement.executeUpdate();
+            result = true;
         } catch (SQLException e){
             e.printStackTrace();
         }
+        return result;
     }
 }
