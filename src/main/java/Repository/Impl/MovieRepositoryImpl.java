@@ -1,9 +1,7 @@
 package Repository.Impl;
 
 import DB.DBUtil;
-import DTO.MovieToSelectionNoIDDTO;
 import Entity.*;
-import Mapper.MovieToSelectionNoIDDTOMapper;
 import Repository.DirectorRepository;
 import Repository.MovieRepository;
 import Repository.MovieToSelectionRepository;
@@ -82,13 +80,11 @@ public class MovieRepositoryImpl implements MovieRepository {
             }
             if(movie.getSelections() != null && !movie.getSelections().isEmpty()){
                 for(int i = 0; i < movie.getSelections().size(); i++){
-                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(newMovie.getId(), movie.getSelections().get(i).getId());
-                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(newMovie.getId(), movie.getSelections().get(i).getId());
                 }
             }
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return newMovie;
     }
@@ -110,9 +106,7 @@ public class MovieRepositoryImpl implements MovieRepository {
             if(movie.getSelections() != null && !movie.getSelections().isEmpty()){
                 movieToSelectionRepository.deleteByMovieId(movie.getId());
                 for(int i = 0; i < movie.getSelections().size(); i++){
-                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(movie.getId(), movie.getSelections().get(i).getId());
-                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(movie.getId(), movie.getSelections().get(i).getId());
                 }
             }
 
@@ -122,7 +116,7 @@ public class MovieRepositoryImpl implements MovieRepository {
             }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException();
         }
 
         return movie;
@@ -137,7 +131,7 @@ public class MovieRepositoryImpl implements MovieRepository {
             preparedStatement.executeUpdate();
             result = true;
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return result;
     }
@@ -149,7 +143,7 @@ public class MovieRepositoryImpl implements MovieRepository {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -163,7 +157,7 @@ public class MovieRepositoryImpl implements MovieRepository {
                 serials.add(createMovie(resultSet));
             }
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return serials;
 

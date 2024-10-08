@@ -1,10 +1,7 @@
 package Repository.Impl;
 
 import DB.DBUtil;
-import DTO.MovieToSelectionNoIDDTO;
-import Entity.MovieToSelection;
 import Entity.Selection;
-import Mapper.MovieToSelectionNoIDDTOMapper;
 import Repository.MovieToSelectionRepository;
 import Repository.SelectionRepository;
 
@@ -59,9 +56,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
             }
             if(selection.getMovies() != null && !selection.getMovies().isEmpty()){
                 for(int i = 0; i < selection.getMovies().size(); i++){
-                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), newSelection.getId());
-                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(selection.getMovies().get(i).getId(), newSelection.getId());
                 }
             }
         } catch (SQLException e){
@@ -80,9 +75,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
             if(selection.getMovies() != null && !selection.getMovies().isEmpty()){
                 movieToSelectionRepository.deleteBySelectionId(selection.getId());
                 for(int i = 0; i < selection.getMovies().size(); i++){
-                    MovieToSelectionNoIDDTO movieToSelectionNoIDDTO = new MovieToSelectionNoIDDTO(selection.getMovies().get(i).getId(), selection.getId());
-                    MovieToSelection movieToSelection = MovieToSelectionNoIDDTOMapper.map(movieToSelectionNoIDDTO);
-                    movieToSelectionRepository.addMovieToSelection(movieToSelection);
+                    movieToSelectionRepository.addMovieToSelection(selection.getMovies().get(i).getId(), selection.getId());
                 }
             }
             ResultSet resultSet = preparedStatement.getGeneratedKeys();

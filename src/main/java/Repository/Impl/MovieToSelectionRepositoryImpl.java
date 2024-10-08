@@ -1,7 +1,6 @@
 package Repository.Impl;
 
 import DB.DBUtil;
-import Entity.MovieToSelection;
 import Repository.MovieToSelectionRepository;
 
 import java.sql.*;
@@ -22,63 +21,58 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
         return instance;
     }
 
-    public List<MovieToSelection> findByMovieId(int movieId) {
-        List<MovieToSelection> movieToSelections = new ArrayList<>();
+    public List<Integer[]> findByMovieId(int movieId) {
+        List<Integer[]> movieToSelections = new ArrayList<>();
         try(Connection connection = DBUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_MOVIE_ID)){
 
             preparedStatement.setInt(1, movieId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
-                MovieToSelection movieToSelection = new MovieToSelection();
-                movieToSelection.setMovieId(resultSet.getInt("movie_id"));
-                movieToSelection.setSelectionId(resultSet.getInt("selection_id"));
+                Integer[] movieToSelection = new Integer[]{resultSet.getInt("movie_id"), resultSet.getInt("selection_id")};
                 movieToSelections.add(movieToSelection);
             }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return movieToSelections;
     }
 
-    public List<MovieToSelection> findBySelectionId(int selectionId) {
-        List<MovieToSelection> movieToSelections = new ArrayList<>();
+    public List<Integer[]> findBySelectionId(int selectionId) {
+        List<Integer[]> movieToSelections = new ArrayList<>();
         try(Connection connection = DBUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_SELECTION_ID)){
 
             preparedStatement.setInt(1, selectionId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
-                MovieToSelection movieToSelection = new MovieToSelection();
-                movieToSelection.setMovieId(resultSet.getInt("movie_id"));
-                movieToSelection.setSelectionId(resultSet.getInt("selection_id"));
+                Integer[] movieToSelection = new Integer[]{resultSet.getInt("movie_id"), resultSet.getInt("selection_id")};
                 movieToSelections.add(movieToSelection);
             }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return movieToSelections;
     }
 
-    public MovieToSelection addMovieToSelection(MovieToSelection movieToSelection) {
-        MovieToSelection newMovieToSelection = new MovieToSelection();
+    public int[] addMovieToSelection(int movieId, int selectionId) {
+        int[] result = new int[2];
         try(Connection connection = DBUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(ADD_MOVIE_TO_SELECTION, Statement.RETURN_GENERATED_KEYS)){
-            preparedStatement.setInt(1, movieToSelection.getMovieId());
-            preparedStatement.setInt(2, movieToSelection.getSelectionId());
+            preparedStatement.setInt(1, movieId);
+            preparedStatement.setInt(2, selectionId);
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if(resultSet.next()) {
-                newMovieToSelection.setId(resultSet.getInt(1));
-                newMovieToSelection.setMovieId(resultSet.getInt(2));
-                newMovieToSelection.setSelectionId(resultSet.getInt(3));
+                result[0] = resultSet.getInt(2);
+                result[1] = resultSet.getInt(3);
             }
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException();
         }
-        return movieToSelection;
+        return result;
     }
 
     public boolean deleteByMovieId(int movieId) {

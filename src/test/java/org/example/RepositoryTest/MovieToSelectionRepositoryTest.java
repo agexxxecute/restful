@@ -1,6 +1,5 @@
 package org.example.RepositoryTest;
 
-import Entity.MovieToSelection;
 import Repository.Impl.MovieToSelectionRepositoryImpl;
 import Repository.MovieToSelectionRepository;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -69,10 +68,9 @@ public class MovieToSelectionRepositoryTest {
     void add(){
         int movieId = 1;
         int selectionId = 1;
-        MovieToSelection movieToSelection = new MovieToSelection(null, movieId, selectionId);
-        movieToSelection = movieToSelectionRepository.addMovieToSelection(movieToSelection);
-        Assertions.assertEquals(movieId, movieToSelection.getMovieId());
-        Assertions.assertEquals(selectionId, movieToSelection.getSelectionId());
+        int[] result = movieToSelectionRepository.addMovieToSelection(movieId, selectionId);
+        Assertions.assertEquals(movieId, result[0]);
+        Assertions.assertEquals(selectionId, result[1]);
     }
 
     @Test
