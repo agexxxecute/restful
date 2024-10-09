@@ -8,9 +8,6 @@ public class SelectionOutDTO {
     private String name;
     private List<MovieNoSelectionDTO> movies;
 
-    public SelectionOutDTO() {
-    }
-
     public SelectionOutDTO(String name, List<MovieNoSelectionDTO> movies) {
         this.name = name;
         this.movies = movies;

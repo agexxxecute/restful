@@ -19,4 +19,8 @@ public interface MovieRepository {
     void removeDirectors(int movieId);
 
     List<Movie> getAllSerials();
+
+    List<Movie> findByDirectorId(int directorId);
+
+    Movie updateDirector(int movieId, int directorId);
 }

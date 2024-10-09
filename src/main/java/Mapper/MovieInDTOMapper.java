@@ -28,7 +28,7 @@ public class MovieInDTOMapper {
         Integer director_id = movieInDTO.getDirector_id();
         if(director_id != null && director_id > 0) {
             DirectorOutDTO directorOutDTO = directorService.findById(director_id);
-            Director director = directorOutDTOMapper.map(directorOutDTO);
+            Director director = new Director(directorOutDTO.getId(), directorOutDTO.getFirstName(), directorOutDTO.getLastName());
             movie.setDirector(director);
         }
 
@@ -40,22 +40,5 @@ public class MovieInDTOMapper {
         }
 
         return movie;
-    }
-
-    public MovieInDTO map (Movie movie) {
-        Integer director_id = null;
-        if(movie.getDirector() != null) {
-            director_id = movie.getDirector().getId();
-        }
-
-        List<Integer> selections = null;
-        if(movie.getSelections() != null && !movie.getSelections().isEmpty()) {
-            selections = movie.getSelections().stream()
-                    .map(Selection::getId)
-                    .collect(Collectors.toList());
-        }
-
-        MovieInDTO movieInDTO = new MovieInDTO(movie.getTitle(), movie.getYear(), movie.isSerial(), director_id, selections);
-        return movieInDTO;
     }
 }

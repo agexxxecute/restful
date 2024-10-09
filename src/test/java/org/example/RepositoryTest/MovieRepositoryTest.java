@@ -132,4 +132,20 @@ public class MovieRepositoryTest {
         Movie movie = movieRepository.getMovieById(0);
         Assertions.assertNull(movie);
     }
+
+    @Test
+    void findByDirectorId(){
+        int directorId = 1;
+        int expectedSize = 3;
+        Assertions.assertEquals(expectedSize, movieRepository.findByDirectorId(directorId).size());
+    }
+
+    @Test
+    void updateDirector(){
+        int directorId = 1;
+        int movieId = 5;
+        movieRepository.updateDirector(movieId, directorId);
+        Movie movie = movieRepository.getMovieById(movieId);
+        Assertions.assertEquals(directorId, movie.getDirector().getId());
+    }
 }

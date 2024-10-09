@@ -12,9 +12,6 @@ public class MovieOutDTO {
     private Director director;
     private List<SelectionNoIdDTO> selections;
 
-    public MovieOutDTO() {
-    }
-
     public MovieOutDTO(Integer id, String title, int year, boolean isSerial, Director director, List<SelectionNoIdDTO> selections) {
         this.id = id;
         this.title = title;

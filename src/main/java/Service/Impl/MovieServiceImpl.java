@@ -26,6 +26,7 @@ public class MovieServiceImpl implements MovieService {
     private MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
     private MovieInDTOMapper movieInDTOMapper = new MovieInDTOMapper();
     private MovieUpdateDTOMapper movieUpdateDTOMapper = new MovieUpdateDTOMapper();
+    private MovieOutDTOMapper movieOutDTOMapper = new MovieOutDTOMapper();
     private SelectionRepository selectionRepository = new SelectionRepositoryImpl();
     private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
 
@@ -40,7 +41,7 @@ public class MovieServiceImpl implements MovieService {
         List<Movie> movies = movieRepository.findAll();
         return movies.stream()
                 .map(instance::findSelections)
-                .map(MovieOutDTOMapper::map)
+                .map(movieOutDTOMapper::map)
                 .collect(Collectors.toList());
     }
 
@@ -48,14 +49,14 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieRepository.getMovieById(id);
         movie = findSelections(movie);
         if(movie != null) {
-            return MovieOutDTOMapper.map(movie);
+            return movieOutDTOMapper.map(movie);
         } else return null;
     }
 
     public List<MovieOutDTO> findAllSerials() {
         List<Movie> serials = movieRepository.getAllSerials();
         if(serials != null) {
-            return MovieOutDTOMapper.map(serials);
+            return movieOutDTOMapper.map(serials);
         } else return null;
     }
 

@@ -8,9 +8,6 @@ public class MovieNoSelectionDTO {
     private boolean isSerial;
     private Director director;
 
-    public MovieNoSelectionDTO() {
-    }
-
     public MovieNoSelectionDTO(String title, int year, boolean isSerial, Director director) {
         this.title = title;
         this.year = year;

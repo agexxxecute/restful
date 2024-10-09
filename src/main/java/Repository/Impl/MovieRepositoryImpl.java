@@ -23,6 +23,8 @@ public class MovieRepositoryImpl implements MovieRepository {
     private static String UPDATE_MOVIE = "UPDATE movie SET title = ?, year = ?, isserial = ?, director_id = ? WHERE id = ?";
     private static String DELETE_MOVIE = "DELETE FROM movie WHERE id = ?";
     private String DELETE_DIRECTORS = "UPDATE movie SET director_id = null WHERE director_id = ?";
+    private static String FIND_BY_DIRECTOR_ID = "SELECT * FROM movie WHERE director_id = ?";
+    private static String UPDATE_DIRECTOR = "UPDATE movie SET director_id = ? WHERE id = ?";
 
 
     public static MovieRepositoryImpl getInstance() {
@@ -161,6 +163,39 @@ public class MovieRepositoryImpl implements MovieRepository {
         }
         return serials;
 
+    }
+
+    public List<Movie> findByDirectorId(int directorId) {
+        List<Movie> movies = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_DIRECTOR_ID)){
+            preparedStatement.setInt(1, directorId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                movies.add(createMovie(resultSet));
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return movies;
+    }
+
+    public Movie updateDirector(int movieId, int directorId) {
+        Movie movie = new Movie();
+        try(Connection connection = DBUtil.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DIRECTOR, Statement.RETURN_GENERATED_KEYS)){
+            preparedStatement.setInt(1, directorId);
+            preparedStatement.setInt(2, movieId);
+            preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if(resultSet.next()) {
+                movie = createMovie(resultSet);
+            }
+
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return movie;
     }
 
     private Movie createMovie(ResultSet resultSet) throws SQLException {

@@ -6,14 +6,23 @@ public class Director {
     private Integer Id;
     private String firstName;
     private String lastName;
+    private List<Movie> movies;
 
     public Director() {
     }
 
     public Director(Integer id, String firstName, String lastName) {
+        this.Id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        movies = null;
+    }
+
+    public Director(Integer id, String firstName, String lastName, List<Movie> movies) {
         Id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.movies = movies;
     }
 
     public int getId() {
@@ -38,5 +47,13 @@ public class Director {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
     }
 }

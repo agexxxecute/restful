@@ -2,6 +2,7 @@ package Servlet;
 
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
+import DTO.DirectorUpdateDTO;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
 import com.google.gson.Gson;
@@ -74,9 +75,9 @@ public class DirectorServlet extends HttpServlet {
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         String json = getJson(req);
-        DirectorOutDTO directorOutDTO = gson.fromJson(json, DirectorOutDTO.class);
-        if(directorOutDTO.getFirstName()!=null && directorOutDTO.getLastName()!=null) {
-            directorService.update(directorOutDTO);
+        DirectorUpdateDTO directorUpdateDTO = gson.fromJson(json, DirectorUpdateDTO.class);
+        if(directorUpdateDTO.getFirstName()!=null && directorUpdateDTO.getLastName()!=null) {
+            directorService.update(directorUpdateDTO);
             List<DirectorOutDTO> directors = directorService.findAll();
             resp.getWriter().println(gson.toJson(directors));
         } else {

@@ -2,6 +2,7 @@ package org.example.ServletTest;
 
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
+import DTO.DirectorUpdateDTO;
 import Service.Impl.DirectorServiceImpl;
 import Servlet.DirectorServlet;
 import org.junit.jupiter.api.*;
@@ -151,12 +152,12 @@ public class DirectorServletTest {
 
         directorServlet.doPut(mockRequest, mockResponse);
 
-        ArgumentCaptor<DirectorOutDTO> argumentCaptor = ArgumentCaptor.forClass(DirectorOutDTO.class);
+        ArgumentCaptor<DirectorUpdateDTO> argumentCaptor = ArgumentCaptor.forClass(DirectorUpdateDTO.class);
         Mockito.verify(mockDirectorService).update(argumentCaptor.capture());
 
-        DirectorOutDTO directorOutDTO = argumentCaptor.getValue();
-        Assertions.assertEquals(exprectedFirstName, directorOutDTO.getFirstName());
-        Assertions.assertEquals(exprectedLastName, directorOutDTO.getLastName());
+        DirectorUpdateDTO directorUpdateDTO = argumentCaptor.getValue();
+        Assertions.assertEquals(exprectedFirstName, directorUpdateDTO.getFirstName());
+        Assertions.assertEquals(exprectedLastName, directorUpdateDTO.getLastName());
     }
 
     @Test

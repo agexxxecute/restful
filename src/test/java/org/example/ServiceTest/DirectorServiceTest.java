@@ -2,9 +2,12 @@ package org.example.ServiceTest;
 
 import DTO.DirectorInDTO;
 import DTO.DirectorOutDTO;
+import DTO.DirectorUpdateDTO;
 import Entity.Director;
 import Repository.DirectorRepository;
 import Repository.Impl.DirectorRepositoryImpl;
+import Repository.Impl.MovieRepositoryImpl;
+import Repository.MovieRepository;
 import Service.DirectorService;
 import Service.Impl.DirectorServiceImpl;
 import org.junit.jupiter.api.*;
@@ -22,16 +25,23 @@ public class DirectorServiceTest {
 
     @Mock
     private static DirectorRepositoryImpl mockDirectorRepository;
+    private static MovieRepositoryImpl mockMovieRepository;
     @InjectMocks
     private static DirectorService directorService;
-    private static DirectorRepositoryImpl oldInstance;
+    private static DirectorRepositoryImpl oldDirectorRepository;
+    private static MovieRepositoryImpl oldMovieRepository;
 
-    private static void setMock(DirectorRepository mock) {
+    private static void setMock(DirectorRepository mock1, MovieRepository mock2) {
         try{
             Field instance = DirectorRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
-            oldInstance = (DirectorRepositoryImpl) instance.get(instance);
-            instance.set(instance, mock);
+            oldDirectorRepository = (DirectorRepositoryImpl) instance.get(instance);
+            instance.set(instance, mock1);
+
+            Field instance2 = MovieRepositoryImpl.class.getDeclaredField("instance");
+            instance2.setAccessible(true);
+            oldMovieRepository = (MovieRepositoryImpl) instance2.get(instance2);
+            instance2.set(instance2, mock2);
 
         } catch (Exception e){
             throw new RuntimeException(e);
@@ -41,7 +51,8 @@ public class DirectorServiceTest {
     @BeforeAll
     static void beforeAll() {
         mockDirectorRepository = Mockito.mock(DirectorRepositoryImpl.class);
-        setMock(mockDirectorRepository);
+        mockMovieRepository = Mockito.mock(MovieRepositoryImpl.class);
+        setMock(mockDirectorRepository, mockMovieRepository);
         directorService = DirectorServiceImpl.getInstance();
 
 
@@ -51,8 +62,11 @@ public class DirectorServiceTest {
     static void afterAll() throws Exception {
         Field instance1 = DirectorRepositoryImpl.class.getDeclaredField("instance");
         instance1.setAccessible(true);
-        instance1.set(instance1, oldInstance);
+        instance1.set(instance1, oldDirectorRepository);
 
+        Field instance2 = MovieRepositoryImpl.class.getDeclaredField("instance");
+        instance2.setAccessible(true);
+        instance2.set(instance2, oldMovieRepository);
     }
 
     @AfterEach
@@ -74,7 +88,7 @@ public class DirectorServiceTest {
         DirectorInDTO directorInDTO = new DirectorInDTO(expectedFirstName, expectedLastName);
         Director director = new Director(0, "firstName", "lastName");
         Mockito.doReturn(director).when(mockDirectorRepository).addDirector(Mockito.any(Director.class));
-        DirectorOutDTO result = directorService.add(directorInDTO);
+        Director result = directorService.add(directorInDTO);
         Mockito.verify(mockDirectorRepository).addDirector(Mockito.any(Director.class));
         Assertions.assertEquals(expectedFirstName, result.getFirstName());
         Assertions.assertEquals(expectedLastName, result.getLastName());
@@ -86,10 +100,10 @@ public class DirectorServiceTest {
         Integer expectedId = 5;
         String expectedFirstName = "firstName";
         String expectedLastName = "lastName";
-        DirectorOutDTO directorOutDTO = new DirectorOutDTO(expectedId, expectedFirstName, expectedLastName);
+        DirectorUpdateDTO directorUpdateDTO = new DirectorUpdateDTO(expectedId, expectedFirstName, expectedLastName, null);
         Director director = new Director(5, "firstName", "lastName");
         Mockito.doReturn(director).when(mockDirectorRepository).updateDirector(Mockito.any(Director.class));
-        DirectorOutDTO result = directorService.update(directorOutDTO);
+        DirectorUpdateDTO result = directorService.update(directorUpdateDTO);
         Mockito.verify(mockDirectorRepository).updateDirector(Mockito.any(Director.class));
         Assertions.assertEquals(expectedId, result.getId());
         Assertions.assertEquals(expectedFirstName, result.getFirstName());
