@@ -67,11 +67,6 @@ public class SelectionServiceImpl implements SelectionService {
     private  Selection findMovies(Selection selection){
         List<Integer[]> movieIds = movieToSelectionRepository.findBySelectionId(selection.getId());
         List<Movie> movies = new ArrayList<>();
-        /*List<Movie> movies = movieIds.stream()
-                .map(MovieToSelection::getMovieId)
-                .map(movieRepository::getMovieById)
-                .collect(Collectors.toList());
-        selection.setMovies(movies);*/
         for(Integer[] movieId : movieIds){
             movies.add(movieRepository.getMovieById(movieId[0]));
         }

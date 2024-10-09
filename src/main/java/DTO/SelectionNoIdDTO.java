@@ -6,8 +6,4 @@ public class SelectionNoIdDTO {
     public SelectionNoIdDTO(String name) {
         this.name = name;
     }
-
-    public String getName() {
-        return name;
-    }
 }

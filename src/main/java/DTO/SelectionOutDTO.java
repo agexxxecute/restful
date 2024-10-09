@@ -17,7 +17,4 @@ public class SelectionOutDTO {
         return name;
     }
 
-    public List<MovieNoSelectionDTO> getMovies() {
-        return movies;
-    }
 }

@@ -14,15 +14,7 @@ public class DirectorInDTOMapper {
 
     public Director map (DirectorInDTO directorInDTO) {
         List<Movie> movies = null;
-        /*if(directorInDTO.getMovies() != null && !directorInDTO.getMovies().isEmpty()) {
-            movies = directorInDTO.getMovies().stream()
-                    .map(movieRepository::getMovieById)
-                    .collect(Collectors.toList());
-        }*/
         return new Director(null, directorInDTO.getFirstName(), directorInDTO.getLastName(), movies);
     }
 
-    public static DirectorInDTO map (Director director) {
-        return new DirectorInDTO(director.getFirstName(), director.getLastName());
-    }
 }

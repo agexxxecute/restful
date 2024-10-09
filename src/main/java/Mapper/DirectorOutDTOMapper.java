@@ -21,10 +21,4 @@ public class DirectorOutDTOMapper {
         }
         return new DirectorOutDTO(director.getId(), director.getFirstName(), director.getLastName(), movies);
     }
-
-    public List<DirectorOutDTO> map(List<Director> directors) {
-        return directors.stream()
-                .map(this::map)
-                .collect(Collectors.toList());
-    }
 }
