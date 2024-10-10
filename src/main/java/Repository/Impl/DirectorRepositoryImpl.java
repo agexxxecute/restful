@@ -13,6 +13,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
 
     private static DirectorRepository instance = new DirectorRepositoryImpl();
 
+    private DBUtil dbUtil = new DBUtil();
     private MovieRepository movieRepository;
 
     private static String FIND_ALL_DIRECTORS = "SELECT * FROM director";
@@ -30,7 +31,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
 
     public List<Director> findAll() {
         List<Director> directors = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_DIRECTORS)){
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
@@ -43,7 +44,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
     }
 
     public Director addDirector(Director director) {
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(ADD_DIRECTOR, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, director.getFirstName());
             preparedStatement.setString(2, director.getLastName());
@@ -59,7 +60,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
     }
 
     public Director updateDirector(Director director) {
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DIRECTOR)){
             preparedStatement.setString(1, director.getFirstName());
             preparedStatement.setString(2, director.getLastName());
@@ -77,7 +78,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
 
     public boolean deleteDirectorById(int id) {
         boolean result = false;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DIRECTOR_BY_ID)){
             movieRepository = MovieRepositoryImpl.getInstance();
             movieRepository.removeDirectors(id);
@@ -92,7 +93,7 @@ public class DirectorRepositoryImpl implements DirectorRepository {
 
     public Director findById(int id) {
         Director director = null;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_DIRECTOR_BY_ID)){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();

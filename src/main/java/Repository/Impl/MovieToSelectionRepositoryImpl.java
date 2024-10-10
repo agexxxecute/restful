@@ -17,13 +17,15 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
     private static String DELETE_BY_MOVIE_ID = "DELETE FROM movie_selection WHERE movie_id=?";
     private static String DELETE_BY_SELECTION_ID = "DELETE FROM movie_selection WHERE selection_id=?";
 
+    private DBUtil dbUtil = new DBUtil();
+
     public static MovieToSelectionRepository getInstance() {
         return instance;
     }
 
     public List<Integer[]> findByMovieId(int movieId) {
         List<Integer[]> movieToSelections = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_MOVIE_ID)){
 
             preparedStatement.setInt(1, movieId);
@@ -41,7 +43,7 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
 
     public List<Integer[]> findBySelectionId(int selectionId) {
         List<Integer[]> movieToSelections = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_SELECTION_ID)){
 
             preparedStatement.setInt(1, selectionId);
@@ -59,7 +61,7 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
 
     public int[] addMovieToSelection(int movieId, int selectionId) {
         int[] result = new int[2];
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(ADD_MOVIE_TO_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setInt(1, movieId);
             preparedStatement.setInt(2, selectionId);
@@ -77,7 +79,7 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
 
     public boolean deleteByMovieId(int movieId) {
         boolean result = false;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_MOVIE_ID)){
             preparedStatement.setInt(1, movieId);
             preparedStatement.executeUpdate();
@@ -90,7 +92,7 @@ public class MovieToSelectionRepositoryImpl implements MovieToSelectionRepositor
 
     public boolean deleteBySelectionId(int selectionId) {
         boolean result = false;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_SELECTION_ID)){
             preparedStatement.setInt(1, selectionId);
             preparedStatement.executeUpdate();

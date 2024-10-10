@@ -15,6 +15,7 @@ public class MovieRepositoryImpl implements MovieRepository {
     private static MovieRepositoryImpl instance = new MovieRepositoryImpl();
     private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
     private DirectorRepository directorRepository;
+    private DBUtil dbUtil = new DBUtil();
 
     private static String FIND_MOVIE_BY_ID = "SELECT * FROM movie WHERE id = ?";
     private static String FIND_ALL_SERIALS = "SELECT * FROM movie WHERE isserial = true";
@@ -36,7 +37,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public List<Movie> findAll() {
         List<Movie> movies = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM movie")){
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -50,7 +51,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public Movie getMovieById(int id) {
         Movie movie = null;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_MOVIE_BY_ID)){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -65,7 +66,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public Movie addMovie(Movie movie) {
         Movie newMovie = null;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(CREATE_MOVIE, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, movie.getTitle());
             preparedStatement.setInt(2, movie.getYear());
@@ -92,7 +93,7 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     public Movie updateMovie(Movie movie) {
-        try (Connection connection = DBUtil.getConnection();
+        try (Connection connection = dbUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_MOVIE, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, movie.getTitle());
             preparedStatement.setInt(2, movie.getYear());
@@ -126,7 +127,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public boolean deleteMovie(int movieId) {
         boolean result = false;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_MOVIE)){
             preparedStatement.setInt(1, movieId);
             movieToSelectionRepository.deleteByMovieId(movieId);
@@ -139,7 +140,7 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     public void removeDirectors(int directorId){
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DIRECTORS)){
             preparedStatement.setInt(1, directorId);
             preparedStatement.executeUpdate();
@@ -152,7 +153,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public List<Movie> getAllSerials(){
         List<Movie> serials = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SERIALS)){
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -167,7 +168,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public List<Movie> findByDirectorId(int directorId) {
         List<Movie> movies = new ArrayList<>();
-        try (Connection connection = DBUtil.getConnection();
+        try (Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_DIRECTOR_ID)){
             preparedStatement.setInt(1, directorId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -182,7 +183,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
     public Movie updateDirector(int movieId, int directorId) {
         Movie movie = new Movie();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DIRECTOR, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setInt(1, directorId);
             preparedStatement.setInt(2, movieId);

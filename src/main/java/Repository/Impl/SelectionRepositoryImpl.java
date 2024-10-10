@@ -13,6 +13,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
 
     private static SelectionRepository instance;
     private MovieToSelectionRepository movieToSelectionRepository = new MovieToSelectionRepositoryImpl();
+    private DBUtil dbUtil = new DBUtil();
 
     private static String FIND_BY_ID = "SELECT * FROM selection WHERE id = ?";
     private static String ADD_SELECTION = "INSERT INTO selection (name) VALUES (?)";
@@ -31,7 +32,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
 
     public Selection findSelectionById(int id) {
         Selection selection = null;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -45,7 +46,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
     }
 
     public Selection addSelection(Selection selection) {
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(ADD_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, selection.getName());
             preparedStatement.executeUpdate();
@@ -66,7 +67,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
     }
 
     public Selection updateSelection(Selection selection) {
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SELECTION, Statement.RETURN_GENERATED_KEYS)){
             preparedStatement.setString(1, selection.getName());
             preparedStatement.setInt(2, selection.getId());
@@ -91,7 +92,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
 
     public boolean deleteSelection(int selectionId) {
         boolean result = false;
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SELECTION)){
             preparedStatement.setInt(1, selectionId);
             movieToSelectionRepository.deleteBySelectionId(selectionId);
@@ -106,7 +107,7 @@ public class SelectionRepositoryImpl implements SelectionRepository {
 
     public List<Selection> findAll(){
         List<Selection> selections = new ArrayList<>();
-        try(Connection connection = DBUtil.getConnection();
+        try(Connection connection = dbUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)){
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
